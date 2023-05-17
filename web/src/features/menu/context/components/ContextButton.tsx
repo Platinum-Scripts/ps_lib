@@ -32,7 +32,7 @@ const useStyles = createStyles((theme, params: { disabled?: boolean }) => ({
     maxWidth: '25px',
   },
   description: {
-    color: params.disabled ? theme.colors.dark[3] : theme.colors.lighter[1],
+    color: params.disabled ? theme.colors.dark[3] : theme.colors.lighter[0],
     fontSize: 12,
   },
   dropdown: {

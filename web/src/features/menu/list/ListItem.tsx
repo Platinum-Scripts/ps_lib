@@ -20,13 +20,13 @@ const useStyles = createStyles((theme, params: {
   rightIconColor?: string; iconColor?: string 
 }) => ({
   buttonContainer: {
-    backgroundColor: theme.colors.dark[6],
+    backgroundColor: theme.colors.lighter[1],
     borderRadius: theme.radius.md,
     padding: 2,
     height: 60,
     scrollMargin: 8,
     '&:focus': {
-      backgroundColor: theme.colors.dark[4],
+      backgroundColor: theme.colors.lighter[3],
       outline: 'none',
     },
   },
@@ -46,24 +46,24 @@ const useStyles = createStyles((theme, params: {
   },
   icon: {
     fontSize: 24,
-    color: params.iconColor || theme.colors.lighter[1],
+    color: params.iconColor || theme.colors.lighter[0],
   },
   rightIcon: {
     fontSize: "1.5em",
-    color: params.rightIconColor || theme.colors.lighter[1],
+    color: params.rightIconColor || theme.colors.lighter[0],
   },
   label: {
-    color: theme.colors.lighter[1],
+    color: theme.colors.lighter[0],
     textTransform: 'none',
     fontSize: 12,
     verticalAlign: 'middle',
   },
   chevronIcon: {
     fontSize: 14,
-    color: theme.colors.lighter[1],
+    color: theme.colors.lighter[0],
   },
   scrollIndexValue: {
-    color: theme.colors.lighter[1],
+    color: theme.colors.lighter[0],
     textTransform: 'none',
     fontSize: 14,
   },

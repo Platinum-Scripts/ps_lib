@@ -4,22 +4,16 @@ import {
 
 export const theme: MantineThemeOverride = {
   "colorScheme": "dark",
-  "fontFamily": "Roboto",
+  "fontFamily": "Motiva Sans",
   "colors": {
-    "gray": [
-      "#f8f9fa",
-      "#f1f3f5",
-      "#e9ecef",
+    "progress": [
       "#dee2e6",
-      "#ced4da",
-      "#adb5bd",
-      "#868e96",
-      "#495057",
-      "#343a40",
-      "#212529"
     ],
     "lighter": [
-      "rgb(190 190 190)", // Icon Colors, Button Text Color, Header Text Color
+      "rgb(200, 195, 185)", // Icon Colors, Button Text Color, Header Text Color - Darkened Platinum
+      "rgb(15, 40, 65)", // Main Background Color (Body) - Deeper Dark Blue
+      "rgb(35, 60, 85)", // Secondary Background Color (Header, Description, Button:!hover) - Slightly Lighter Dark Blue
+      "rgb(25, 70, 95)", // Button Hover Color - Even Lighter Dark Blue
     ]
   },
   "shadows": {
@@ -34,8 +28,9 @@ export const theme: MantineThemeOverride = {
           "color": "#f1f3f5"
         }
       }
-    }
+    },
   },
+
   "primaryColor": "blue",
   "primaryShade": 6
 };

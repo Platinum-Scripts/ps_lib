@@ -41,7 +41,7 @@ const useStyles = createStyles((theme) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     fontSize: 20,
-    color: theme.colors.gray[3],
+    color: theme.colors.progress[0],
     textShadow: theme.shadows.sm,
   },
 }));

@@ -10,7 +10,7 @@ const useStyles = createStyles((theme) => ({
   container: {
     width: 300,
     height: 'fit-content',
-    backgroundColor: theme.colors.dark[6],
+    backgroundColor: theme.colors.lighter[1],
     color: theme.colors.dark[0],
     padding: 12,
     borderRadius: theme.radius.sm,
@@ -23,13 +23,13 @@ const useStyles = createStyles((theme) => ({
   },
   description: {
     fontSize: 12,
-    color: theme.colors.lighter[1],
+    color: theme.colors.lighter[0],
     fontFamily: 'Roboto',
     lineHeight: 'normal',
   },
   descriptionOnly: {
     fontSize: 14,
-    color: theme.colors.lighter[1],
+    color: theme.colors.lighter[0],
     fontFamily: 'Roboto',
     lineHeight: 'normal',
   },

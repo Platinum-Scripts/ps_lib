@@ -7,7 +7,7 @@ const useStyles = createStyles((theme) => ({
     textAlign: 'center',
     borderTopLeftRadius: theme.radius.md,
     borderTopRightRadius: theme.radius.md,
-    backgroundColor: theme.colors.dark[6],
+    backgroundColor: theme.colors.lighter[1],
     height: 60,
     width: 384,
     display: 'flex',
@@ -15,10 +15,11 @@ const useStyles = createStyles((theme) => ({
     alignItems: 'center',
   },
   heading: {
-    fontSize: 24,
-    textTransform: 'none',
-    fontWeight: 500,
-  },
+    "fontSize": 28,
+    "textTransform": 'none',
+    "fontWeight": "bold",
+    "fontFamily": "Motiva Sans",
+  }
 }));
 
 const Header: React.FC<{ title: string }> = ({ title }) => {

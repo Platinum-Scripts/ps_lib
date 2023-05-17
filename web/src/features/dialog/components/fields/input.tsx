@@ -12,7 +12,7 @@ interface Props {
 
 const useStyles = createStyles((theme) => ({
   eyeIcon: {
-    color: theme.colors.lighter[1],
+    color: theme.colors.lighter[0],
   },
 }));
 

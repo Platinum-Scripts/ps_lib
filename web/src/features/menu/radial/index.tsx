@@ -15,7 +15,7 @@ const useStyles = createStyles((theme) => ({
     transform: 'translate(-50%, -50%)',
   },
   sector: {
-    fill: theme.colors.dark[6],
+    fill: theme.colors.lighter[1],
     color: theme.colors.dark[0],
 
     '&:hover': {
@@ -29,12 +29,12 @@ const useStyles = createStyles((theme) => ({
     },
   },
   backgroundCircle: {
-    fill: theme.colors.dark[6],
+    fill: theme.colors.lighter[1],
   },
   centerCircle: {
     fill: theme.fn.primaryColor(),
     color: '#fff',
-    stroke: theme.colors.dark[6],
+    stroke: theme.colors.lighter[1],
     strokeWidth: 4,
     '&:hover': {
       fill: theme.colors[theme.primaryColor][theme.fn.primaryShade() - 1],
