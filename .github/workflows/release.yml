@@ -87,7 +87,7 @@ jobs:
 
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
-        id: auto_release
+        id: ${{ env.RELEASE_VERSION }}
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           title: ${{ env.RELEASE_VERSION }}
