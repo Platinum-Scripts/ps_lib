@@ -87,15 +87,6 @@ jobs:
           cp -r ./web/build ./temp/ps_lib/web/
           cd ./temp && zip -r ../ps_lib.zip ./ps_lib
 
-      - name: Create Tag
-        run: git tag ${{ env.RELEASE_VERSION }}
-
-      - name: Push Tag
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tags: true
-
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
         id: auto_release
