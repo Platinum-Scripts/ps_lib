@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
 
 jobs:
   check-commit-message:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.extract-version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,14 +22,25 @@ jobs:
       - name: Extract version from commit message
         id: extract-version
         run: |
-          VERSION_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+$'
-          VERSION=$(git log --format=%B -n 1 HEAD | grep -oP "$VERSION_REGEX")
-          if [[ $VERSION == "" ]]; then
-            echo "Version not found in commit message."
-            exit 1
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            VERSION_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+$'
+            VERSION=$(git log --format=%B -n 1 HEAD | grep -oP "$VERSION_REGEX")
+            if [[ $VERSION == "" ]]; then
+              echo "Version not found in commit message."
+              exit 1
+            fi
+            echo "Version: $VERSION"
+            echo "::set-output name=version::$VERSION"
           fi
-          echo "Version: $VERSION"
-          echo "::set-output name=version::$VERSION"
+
+      - name: Set version from workflow dispatch
+        id: set-version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "::set-output name=version::${{ github.event.inputs.version }}"
+          fi
+    outputs:
+      version: ${{ steps.extract-version.outputs.version || steps.set-version.outputs.version }}
   create-release:
     name: Build and Create Tagged Release
     runs-on: ubuntu-latest
