@@ -2,10 +2,31 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - main
 
 jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Extract version from commit message
+        id: extract-version
+        run: |
+          VERSION_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+$'
+          VERSION=$(git log --format=%B -n 1 HEAD | grep -oP "$VERSION_REGEX")
+          if [[ $VERSION == "" ]]; then
+            echo "Version not found in commit message."
+            exit 1
+          fi
+          echo "Version: $VERSION"
+          echo "::set-output name=version::$VERSION"
   create-release:
     name: Build and Create Tagged Release
     runs-on: ubuntu-latest
@@ -19,38 +40,13 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.repository.default_branch }}
 
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 8.3.1
-
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          cache: "pnpm"
-          cache-dependency-path: "web/pnpm-lock.yaml"
-
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: pnpm install
-        working-directory: web
-        
-      - name: Bump package version
-        run: pnpm version ${{ github.ref_name }}
-        working-directory: package
-
-      - name: Run build
-        run: pnpm build
-        working-directory: web
-        env:
-          CI: false
 
       - name: Bump manifest version
         run: node .github/actions/bump-manifest-version.js
         env:
-          TGT_RELEASE_VERSION: ${{ github.ref_name }}
+          TGT_RELEASE_VERSION: ${{ needs.check-commit-message.outputs.version }}
 
       - name: Push manifest change
         uses: EndBug/add-and-commit@v8
@@ -59,12 +55,12 @@ jobs:
           push: true
           author_name: Manifest Bumper
           author_email: 41898282+github-actions[bot]@users.noreply.github.com
-          message: "chore: bump manifest version to ${{ github.ref_name }}"
+          message: "chore: bump manifest version to ${{ needs.check-commit-message.outputs.version }}"
 
       - name: Update tag ref
         uses: EndBug/latest-tag@latest
         with:
-          tag-name: ${{ github.ref_name }}
+          tag-name: ${{ needs.check-commit-message.outputs.version }}
 
       - name: Bundle files
         run: |
