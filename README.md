@@ -11,16 +11,16 @@ ps_lib is used for Platinum Scripts releases. ps_lib is a fork of ox_lib made by
 FXServer provides its own system for including files, which we use to load this resource in the fxmanifest via
 
 ```lua
-shared_script '@ox_lib/init.lua'
+shared_script '@ps_lib/init.lua'
 ```
 
 ### server.cfg
 
 ```
-add_ace resource.ox_lib command.add_ace allow
-add_ace resource.ox_lib command.remove_ace allow
-add_ace resource.ox_lib command.add_principal allow
-add_ace resource.ox_lib command.remove_principal allow
+add_ace resource.ps_lib command.add_ace allow
+add_ace resource.ps_lib command.remove_ace allow
+add_ace resource.ps_lib command.add_principal allow
+add_ace resource.ps_lib command.remove_principal allow
 ```
 
 ## License

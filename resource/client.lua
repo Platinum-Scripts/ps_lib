@@ -5,7 +5,7 @@ local _registerCommand = RegisterCommand
 ---@param restricted boolean?
 function RegisterCommand(commandName, callback, restricted)
 	_registerCommand(commandName, function(source, args, raw)
-		if not restricted or lib.callback.await('ox_lib:checkPlayerAce', 100, ('command.%s'):format(commandName)) then
+		if not restricted or lib.callback.await('ps_lib:checkPlayerAce', 100, ('command.%s'):format(commandName)) then
 			callback(source, args, raw)
 		end
 	end)

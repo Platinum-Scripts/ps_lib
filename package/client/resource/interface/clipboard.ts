@@ -1,1 +1,1 @@
-export const setClipboard = (value: string) => exports.ox_lib.setClipboard(value);
+export const setClipboard = (value: string) => exports.ps_lib.setClipboard(value);

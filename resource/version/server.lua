@@ -35,4 +35,4 @@ function lib.versionCheck(repository)
 	end)
 end
 
-lib.versionCheck('overextended/ox_lib')
+lib.versionCheck('overextended/ps_lib')

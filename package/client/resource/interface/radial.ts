@@ -8,13 +8,13 @@ type RadialItem = {
   menu?: string;
 };
 
-export const addRadialItem = (items: RadialItem | RadialItem[]) => exports.ox_lib.addRadialItem(items);
+export const addRadialItem = (items: RadialItem | RadialItem[]) => exports.ps_lib.addRadialItem(items);
 
-export const removeRadialItem = (item: string) => exports.ox_lib.removeRadialItem(item);
+export const removeRadialItem = (item: string) => exports.ps_lib.removeRadialItem(item);
 
 export const registerRadial = (radial: { id: string; items: Omit<RadialItem, 'id'>[] }) =>
-  exports.ox_lib.registerRadial(radial);
+  exports.ps_lib.registerRadial(radial);
 
-export const hideRadial = () => exports.ox_lib.hideRadial();
+export const hideRadial = () => exports.ps_lib.hideRadial();
 
-export const disableRadial = (state: boolean) => exports.ox_lib.disableRadial(state);
+export const disableRadial = (state: boolean) => exports.ps_lib.disableRadial(state);

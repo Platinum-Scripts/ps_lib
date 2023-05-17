@@ -72,7 +72,7 @@ local function closeCreator(cancel)
 
         format = input[2]
 
-		TriggerServerEvent('ox_lib:saveZone', {
+		TriggerServerEvent('ps_lib:saveZone', {
 			zoneType = zoneType,
 			name = input[1] or 'none',
 			format = format,

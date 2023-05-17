@@ -1,8 +1,8 @@
 {
-  "name": "@overextended/ox_lib",
-  "author": "Overextended",
+  "name": "@platinumscripts/ps_lib",
+  "author": "PlatinumScripts",
   "version": "1.0.0",
-  "description": "JS/TS wrapper for ox_lib exports",
+  "description": "JS/TS wrapper for ps_lib exports",
   "types": "./client/index.d.ts",
   "main": "index.js",
   "scripts": {
@@ -16,10 +16,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/overextended/ox_lib.git"
+    "url": "git+https://github.com/Platinum-Scripts/ps_lib.git"
   },
   "bugs": {
-    "url": "https://github.com/overextended/ox_lib/issues"
+    "url": "https://github.com/Platinum-Scripts/ps_lib/issues"
   },
   "license": "LGPL-3.0",
   "dependencies": {

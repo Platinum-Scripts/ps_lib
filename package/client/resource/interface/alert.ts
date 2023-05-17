@@ -13,6 +13,6 @@ interface AlertDialogProps {
 
 type alertDialog = (data: AlertDialogProps) => Promise<'cancel' | 'confirm'>;
 
-export const alertDialog: alertDialog = async (data) => await exports.ox_lib.alertDialog(data);
+export const alertDialog: alertDialog = async (data) => await exports.ps_lib.alertDialog(data);
 
-export const closeAlertDialog = () => exports.ox_lib.closeAlertDialog();
+export const closeAlertDialog = () => exports.ps_lib.closeAlertDialog();

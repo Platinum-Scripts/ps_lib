@@ -1,4 +1,4 @@
--- ox_lib <https://github.com/overextended/ox_lib>
+-- ps_lib <https://github.com/Platinum-Scripts/ps_lib>
 -- Copyright (C) 2021 Linden <https://github.com/thelindat>
 -- LGPL-3.0-or-later <https://www.gnu.org/licenses/lgpl-3.0.en.html>
 
@@ -6,11 +6,11 @@ if not _VERSION:find('5.4') then
 	error('^1Lua 5.4 must be enabled in the resource manifest!^0', 2)
 end
 
-local ox_lib = 'ox_lib'
-local export = exports[ox_lib]
+local ps_lib = 'ps_lib'
+local export = exports[ps_lib]
 
-if not GetResourceState(ox_lib):find('start') then
-	error('^1ox_lib should be started before this resource.^0', 2)
+if not GetResourceState(ps_lib):find('start') then
+	error('^1ps_lib should be started before this resource.^0', 2)
 end
 
 local status = export.hasLoaded()
@@ -28,15 +28,15 @@ function noop() end
 
 local function loadModule(self, module)
 	local dir = ('imports/%s'):format(module)
-	local chunk = LoadResourceFile(ox_lib, ('%s/%s.lua'):format(dir, context))
-	local shared = LoadResourceFile(ox_lib, ('%s/shared.lua'):format(dir))
+	local chunk = LoadResourceFile(ps_lib, ('%s/%s.lua'):format(dir, context))
+	local shared = LoadResourceFile(ps_lib, ('%s/shared.lua'):format(dir))
 
 	if shared then
 		chunk = (chunk and ('%s\n%s'):format(shared, chunk)) or shared
 	end
 
 	if chunk then
-		local fn, err = load(chunk, ('@@ox_lib/%s/%s.lua'):format(module, context))
+		local fn, err = load(chunk, ('@@ps_lib/%s/%s.lua'):format(module, context))
 
 		if not fn or err then
 			return error(('\n^1Error importing module (%s): %s^0'):format(dir, err), 3)
@@ -76,10 +76,10 @@ local function call(self, index, ...)
 end
 
 lib = setmetatable({
-	name = ox_lib,
+	name = ps_lib,
 	context = context,
 	onCache = function(key, cb)
-		AddEventHandler(('ox_lib:cache:%s'):format(key), cb)
+		AddEventHandler(('ps_lib:cache:%s'):format(key), cb)
 	end
 }, {
 	__index = call,
@@ -151,7 +151,7 @@ local notify = ('__ox_notify_%s'):format(cache.resource)
 if context == 'client' then
 	setmetatable(cache, {
 		__index = function(self, key)
-			AddEventHandler(('ox_lib:cache:%s'):format(key), function(value)
+			AddEventHandler(('ps_lib:cache:%s'):format(key), function(value)
 				self[key] = value
 			end)
 

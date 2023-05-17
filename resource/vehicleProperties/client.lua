@@ -82,7 +82,7 @@ if cache.game == 'redm' then return end
 ---@field doors? number[]
 ---@field tyres? number[]
 
-RegisterNetEvent('ox_lib:setVehicleProperties', function(netid, data)
+RegisterNetEvent('ps_lib:setVehicleProperties', function(netid, data)
     local timeout = 100
     while not NetworkDoesEntityExistWithNetworkId(netid) and timeout > 0 do
         Wait(0)

@@ -68,12 +68,12 @@ jobs:
 
       - name: Bundle files
         run: |
-          mkdir -p ./temp/ox_lib
-          mkdir -p ./temp/ox_lib/web/
-          cp ./{LICENSE,README.md,fxmanifest.lua,init.lua} ./temp/ox_lib
-          cp -r ./{imports,resource,locales} ./temp/ox_lib
-          cp -r ./web/build ./temp/ox_lib/web/
-          cd ./temp && zip -r ../ox_lib.zip ./ox_lib
+          mkdir -p ./temp/ps_lib
+          mkdir -p ./temp/ps_lib/web/
+          cp ./{LICENSE,README.md,fxmanifest.lua,init.lua} ./temp/ps_lib
+          cp -r ./{imports,resource,locales} ./temp/ps_lib
+          cp -r ./web/build ./temp/ps_lib/web/
+          cd ./temp && zip -r ../ps_lib.zip ./ps_lib
 
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
@@ -82,7 +82,7 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           title: ${{ env.RELEASE_VERSION }}
           prerelease: false
-          files: ox_lib.zip
+          files: ps_lib.zip
 
         env:
           CI: false

@@ -294,7 +294,7 @@ function lib.disableRadial(state)
 end
 
 lib.addKeybind({
-    name = 'ox_lib-radial',
+    name = 'ps_lib-radial',
     description = 'Open radial menu',
     defaultKey = 'z',
     onPressed = function()

@@ -38,6 +38,6 @@ function lib.removePrincipal(child, parent)
 	ExecuteCommand(('remove_principal %s %s'):format(child, parent))
 end
 
-lib.callback.register('ox_lib:checkPlayerAce', function(source, command)
+lib.callback.register('ps_lib:checkPlayerAce', function(source, command)
     return IsPlayerAceAllowed(source, command)
 end)

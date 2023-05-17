@@ -36,5 +36,5 @@ function lib.defaultNotify(data)
     return lib.notify(data)
 end
 
-RegisterNetEvent('ox_lib:notify', lib.notify)
-RegisterNetEvent('ox_lib:defaultNotify', lib.defaultNotify)
+RegisterNetEvent('ps_lib:notify', lib.notify)
+RegisterNetEvent('ps_lib:defaultNotify', lib.defaultNotify)

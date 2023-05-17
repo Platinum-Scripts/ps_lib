@@ -7,16 +7,16 @@ export const cache: Record<string, any> = new Proxy(
       const result = key ? target[key] : target;
       if (result !== undefined) return result;
 
-      AddEventHandler(`ox_lib:cache:${key}`, (value: any) => {
+      AddEventHandler(`ps_lib:cache:${key}`, (value: any) => {
         target[key] = value;
       });
 
-      target[key] = exports.ox_lib.cache(key) || false;
+      target[key] = exports.ps_lib.cache(key) || false;
       return target[key];
     },
   }
 );
 
 export const onCache = <T = any>(key: string, cb: (value: T) => void) => {
-  AddEventHandler(`ox_lib:cache:${key}`, cb);
+  AddEventHandler(`ps_lib:cache:${key}`, cb);
 };

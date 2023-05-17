@@ -9,14 +9,8 @@ ox_lib.
 ## Installation
 
 ```yaml
-# With pnpm
-pnpm add @overextended/ox_lib
-
-# With Yarn
-yarn add @overextended/ox_lib
-
 # With npm
-npm install @overextended/ox_lib
+npm install @platinumscripts/ps_lib
 ```
 
 ## Usage
@@ -24,16 +18,16 @@ You can either import the lib from client or server files or deconstruct the obj
 you may require.
 
 ```ts
-import lib from '@overextended/ox_lib/client'
+import lib from '@platinumscripts/ps_lib/client'
 ```
 
 ```ts
-import lib from '@overextended/ox_lib/server'
+import lib from '@platinumscripts/ps_lib/server'
 ```
 
 ```ts
-import { checkDependency } from '@overextended/ox_lib/shared';
+import { checkDependency } from '@platinumscripts/ps_lib/shared';
 ```
 
 ## Documentation
-[View documentation](https://overextended.github.io/docs/ox_lib)
+[View documentation](https://overextended.github.io/docs/ps_lib)

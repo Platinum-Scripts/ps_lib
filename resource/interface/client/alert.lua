@@ -48,4 +48,4 @@ RegisterNUICallback('closeAlert', function(data, cb)
     promise:resolve(data)
 end)
 
-RegisterNetEvent('ox_lib:alertDialog', lib.alertDialog)
+RegisterNetEvent('ps_lib:alertDialog', lib.alertDialog)

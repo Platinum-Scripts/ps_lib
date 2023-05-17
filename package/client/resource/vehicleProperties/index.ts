@@ -86,7 +86,7 @@ interface VehicleProperties {
 }
 
 export const getVehicleProperties = (vehicle: number): VehicleProperties =>
-  exports.ox_lib.getVehicleProperties(vehicle);
+  exports.ps_lib.getVehicleProperties(vehicle);
 
 export const setVehicleProperties = (vehicle: number, props: Partial<VehicleProperties>): boolean =>
-  exports.ox_lib.setVehicleProperties(vehicle, props);
+  exports.ps_lib.setVehicleProperties(vehicle, props);
