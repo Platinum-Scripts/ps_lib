@@ -1,29 +1,26 @@
-import { Checkbox, createStyles, Stack } from '@mantine/core';
+import React from 'react';
+import { createStyles } from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
+  toggleOn: {
+    color: theme.colors.dark[1],
   },
-  input: {
-    backgroundColor: theme.colors.dark[7],
-    '&:checked': { backgroundColor: theme.colors.dark[2], borderColor: theme.colors.dark[2] },
-  },
-  inner: {
-    '> svg > path': {
-      fill: theme.colors.dark[6],
-    },
+  toggleOff: {
+    color: theme.colors.dark[3],
   },
 }));
 
 const CustomCheckbox: React.FC<{ checked: boolean }> = ({ checked }) => {
   const { classes } = useStyles();
+
   return (
-    <Checkbox
-      checked={checked}
-      size="md"
-      classNames={{ root: classes.root, input: classes.input, inner: classes.inner }}
-    />
+    <>
+      {checked ? (
+        <i className={`${classes.toggleOn} far fa-toggle-on fa-2x`} />
+      ) : (
+        <i className={`${classes.toggleOff} fas fa-toggle-off fa-2x`} />
+      )}
+    </>
   );
 };
 

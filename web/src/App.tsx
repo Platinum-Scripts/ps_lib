@@ -15,11 +15,8 @@ import SkillCheck from './features/skillcheck';
 import RadialMenu from './features/menu/radial';
 import { theme } from './theme';
 import { MantineProvider } from '@mantine/core';
-import { useConfig } from './providers/ConfigProvider';
 
 const App: React.FC = () => {
-  const { config } = useConfig();
-
   useNuiEvent('setClipboard', (data: string) => {
     setClipboard(data);
   });
@@ -27,7 +24,7 @@ const App: React.FC = () => {
   fetchNui('init');
 
   return (
-    <MantineProvider withNormalizeCSS withGlobalStyles theme={{ ...theme, ...config }}>
+    <MantineProvider withNormalizeCSS withGlobalStyles theme={{ ...theme }}>
       <Progressbar />
       <CircleProgressbar />
       <Notifications />

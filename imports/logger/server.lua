@@ -115,7 +115,7 @@ end
 
 if service == 'loki' then
     local lokiUser = GetConvar('loki:user', '')
-    local lokiPassword = GetConvar('loki:password', GetConvar('loki:key', ''))
+    local lokiPassword = GetConvar('loki:password', '')
     local lokiEndpoint = GetConvar('loki:endpoint', '')
     local startingPattern = '^http[s]?://'
     local headers = {

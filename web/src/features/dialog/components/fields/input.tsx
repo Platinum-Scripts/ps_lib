@@ -12,7 +12,7 @@ interface Props {
 
 const useStyles = createStyles((theme) => ({
   eyeIcon: {
-    color: theme.colors.dark[2],
+    color: theme.colors.lighter[1],
   },
 }));
 
@@ -27,10 +27,8 @@ const InputField: React.FC<Props> = (props) => {
           defaultValue={props.row.default}
           label={props.row.label}
           description={props.row.description}
-          icon={props.row.icon && <FontAwesomeIcon icon={props.row.icon} fixedWidth />}
+          icon={props.row.icon && <i className={`fa-solid fa-fw findme ${props.row.icon}`}/>}
           placeholder={props.row.placeholder}
-          minLength={props.row.min}
-          maxLength={props.row.max}
           disabled={props.row.disabled}
           withAsterisk={props.row.required}
         />
@@ -40,10 +38,8 @@ const InputField: React.FC<Props> = (props) => {
           defaultValue={props.row.default}
           label={props.row.label}
           description={props.row.description}
-          icon={props.row.icon && <FontAwesomeIcon icon={props.row.icon} fixedWidth />}
+          icon={props.row.icon && <i className={`fa-solid fa-fw findme ${props.row.icon}`}/>}
           placeholder={props.row.placeholder}
-          minLength={props.row.min}
-          maxLength={props.row.max}
           disabled={props.row.disabled}
           withAsterisk={props.row.required}
           visibilityToggleIcon={({ reveal, size }) => (

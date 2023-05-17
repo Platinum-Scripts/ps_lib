@@ -32,7 +32,7 @@ const ColorField: React.FC<Props> = (props) => {
       defaultValue={props.row.default}
       format={props.row.format}
       withAsterisk={props.row.required}
-      icon={props.row.icon && <FontAwesomeIcon icon={props.row.icon} fixedWidth />}
+      icon={props.row.icon && <i className={`fa-solid fa-fw findme ${props.row.icon}`}/>}
     />
   );
 };

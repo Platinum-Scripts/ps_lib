@@ -2,7 +2,7 @@ import { useNuiEvent } from '../../hooks/useNuiEvent';
 import { toast, Toaster } from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactMarkdown from 'react-markdown';
-import { Avatar, createStyles, Group, Stack, Box, Text, keyframes, Sx } from '@mantine/core';
+import { Avatar, createStyles, Group, Stack, Box, Text, keyframes } from '@mantine/core';
 import React from 'react';
 import type { NotificationProps } from '../../typings';
 
@@ -23,13 +23,13 @@ const useStyles = createStyles((theme) => ({
   },
   description: {
     fontSize: 12,
-    color: theme.colors.dark[2],
+    color: theme.colors.lighter[1],
     fontFamily: 'Roboto',
     lineHeight: 'normal',
   },
   descriptionOnly: {
     fontSize: 14,
-    color: theme.colors.dark[2],
+    color: theme.colors.lighter[1],
     fontFamily: 'Roboto',
     lineHeight: 'normal',
   },
@@ -120,38 +120,40 @@ const Notifications: React.FC = () => {
     if (!data.icon) {
       switch (data.type) {
         case 'error':
-          data.icon = 'circle-xmark';
+          data.icon = 'fa-circle-xmark';
           break;
         case 'success':
-          data.icon = 'circle-check';
+          data.icon = 'fa-circle-check';
           break;
         case 'warning':
-          data.icon = 'circle-exclamation';
+          data.icon = 'fa-circle-exclamation';
           break;
         default:
-          data.icon = 'circle-info';
+          data.icon = 'fa-circle-info';
           break;
       }
+    } else if (!data.icon.startsWith('fa-')) {
+      data.icon = `fa-${data.icon}`;
     }
+    
     toast.custom(
       (t) => (
         <Box
           sx={{
             animation: t.visible
               ? `${position?.includes('bottom') ? enterAnimationBottom : enterAnimationTop} 0.2s ease-out forwards`
-              : `${
-                  position?.includes('right')
-                    ? exitAnimationRight
-                    : position?.includes('left')
-                    ? exitAnimationLeft
-                    : position === 'top-center'
+              : `${position?.includes('right')
+                ? exitAnimationRight
+                : position?.includes('left')
+                  ? exitAnimationLeft
+                  : position === 'top-center'
                     ? exitAnimationTop
                     : position
-                    ? exitAnimationBottom
-                    : exitAnimationRight
-                } 0.4s ease-in forwards`,
-            ...data.style,
+                      ? exitAnimationBottom
+                      : exitAnimationRight
+              } 0.4s ease-in forwards`,
           }}
+          style={data.style}
           className={`${classes.container}`}
         >
           <Group noWrap spacing={12}>
@@ -159,29 +161,21 @@ const Notifications: React.FC = () => {
               <>
                 {!data.iconColor ? (
                   <Avatar
-                    color={
-                      data.type === 'error'
-                        ? 'red'
-                        : data.type === 'success'
-                        ? 'teal'
-                        : data.type === 'warning'
-                        ? 'yellow'
-                        : 'blue'
-                    }
+                    color={data.type === 'error' ? 'red' : data.type === 'success' ? 'teal' : data.type === 'warning' ? 'yellow' : 'blue'}
                     radius="xl"
                     size={32}
                   >
-                    <FontAwesomeIcon icon={data.icon} fixedWidth size="lg" />
+                    <i className={`fa-solid fa-fw fa-lg findme ${data.icon}`} />
                   </Avatar>
                 ) : (
-                  <FontAwesomeIcon icon={data.icon} style={{ color: data.iconColor }} fixedWidth size="lg" />
+                  <i className={`fa-solid fa-fw fa-lg findme ${data.icon}`} style={{ color: data.iconColor }} />
                 )}
               </>
             )}
             <Stack spacing={0}>
               {data.title && <Text className={classes.title}>{data.title}</Text>}
               {data.description && (
-                <ReactMarkdown className={`${!data.title ? classes.descriptionOnly : classes.description} description`}>
+                <ReactMarkdown className={!data.title ? classes.descriptionOnly : classes.description}>
                   {data.description}
                 </ReactMarkdown>
               )}

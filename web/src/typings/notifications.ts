@@ -1,13 +1,13 @@
+import React from 'react';
 import { ToastPosition } from 'react-hot-toast';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { Sx } from '@mantine/core';
 
 export interface NotificationProps {
-  style?: Sx;
+  style?: React.CSSProperties;
   description?: string;
   title?: string;
   duration?: number;
-  icon?: IconProp;
+  icon?: IconProp | any;
   iconColor?: string;
   position?: ToastPosition | 'top' | 'bottom';
   id?: number | string;

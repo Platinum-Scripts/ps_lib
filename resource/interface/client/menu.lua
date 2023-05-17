@@ -109,6 +109,28 @@ function lib.setMenuOptions(id, options, index)
     end
 end
 
+---@param id string
+---@param position MenuPosition
+function lib.setMenuPosition(id, position)
+    registeredMenus[id].position = position
+end
+
+---@param id string
+---@param index number
+function lib.setSelectedIndex(id, index)
+    local menu = registeredMenus[id]
+    SendNUIMessage({
+        action = 'setMenu',
+        data = {
+            position = menu.position,
+            canClose = menu.canClose,
+            title = menu.title,
+            items = menu.options,
+            startItemIndex = index and index - 1 or 0
+        }
+    })
+end
+
 ---@return string?
 function lib.getOpenMenu() return openMenu and openMenu.id end
 

@@ -12,6 +12,8 @@ export interface MenuItem {
   description?: string;
   icon?: IconProp | string;
   iconColor?: string;
+  rightIcon?: IconProp | string;
+  rightIconColor?: string;
   defaultIndex?: number;
   close?: boolean;
 }

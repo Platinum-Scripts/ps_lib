@@ -12,7 +12,7 @@ import type { MenuPosition, MenuSettings } from '../../../typings';
 const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCount: number; selected: number }) => ({
   tooltip: {
     backgroundColor: theme.colors.dark[6],
-    color: theme.colors.dark[2],
+    color: theme.colors.lighter[1],
     borderRadius: theme.radius.sm,
     maxWidth: 350,
     whiteSpace: 'normal',
@@ -46,7 +46,7 @@ const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCo
     height: 25,
   },
   scrollArrowIcon: {
-    color: theme.colors.dark[2],
+    color: theme.colors.lighter[1],
     fontSize: 20,
   },
 }));
@@ -75,12 +75,14 @@ const ListMenu: React.FC = () => {
     if (firstRenderRef.current) firstRenderRef.current = false;
     switch (e.code) {
       case 'ArrowDown':
+        fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch(err => console.log(err));
         setSelected((selected) => {
           if (selected >= menu.items.length - 1) return (selected = 0);
           return selected + 1;
         });
         break;
       case 'ArrowUp':
+        fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
         setSelected((selected) => {
           if (selected <= 0) return (selected = menu.items.length - 1);
           return selected - 1;
@@ -88,6 +90,7 @@ const ListMenu: React.FC = () => {
         break;
       case 'ArrowRight':
         if (Array.isArray(menu.items[selected].values))
+          fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
           setIndexStates({
             ...indexStates,
             [selected]:
@@ -96,6 +99,7 @@ const ListMenu: React.FC = () => {
         break;
       case 'ArrowLeft':
         if (Array.isArray(menu.items[selected].values))
+          fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
           setIndexStates({
             ...indexStates,
             [selected]:
@@ -106,11 +110,13 @@ const ListMenu: React.FC = () => {
       case 'Enter':
         if (!menu.items[selected]) return;
         if (menu.items[selected].checked !== undefined && !menu.items[selected].values) {
+          fetchNui("PLAY_SOUND_FRONTEND", { audioName: "Pin_Centred", audioRef: "DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS" }).catch();
           return setCheckedStates({
             ...checkedStates,
             [selected]: !checkedStates[selected],
           });
         }
+        fetchNui("PLAY_SOUND_FRONTEND", { audioName: "SELECT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
         fetchNui('confirmSelected', [selected, indexStates[selected]]).catch();
         if (menu.items[selected].close === undefined || menu.items[selected].close) setVisible(false);
         break;
@@ -135,11 +141,13 @@ const ListMenu: React.FC = () => {
 
   useEffect(() => {
     if (!menu.items[selected]) return;
-    listRefs.current[selected]?.scrollIntoView({
-      block: 'nearest',
-      inline: 'start',
-    });
-    listRefs.current[selected]?.focus({ preventScroll: true });
+    if (listRefs && listRefs.current && listRefs.current[selected]) {
+      listRefs.current[selected]?.scrollIntoView({
+        block: 'nearest',
+        inline: 'start',
+      });
+      listRefs.current[selected]?.focus({ preventScroll: true });
+    }
     // debounces the callback to avoid spam
     const timer = setTimeout(() => {
       fetchNui('changeSelected', [
@@ -147,8 +155,8 @@ const ListMenu: React.FC = () => {
         menu.items[selected].values
           ? indexStates[selected]
           : menu.items[selected].checked
-          ? checkedStates[selected]
-          : null,
+            ? checkedStates[selected]
+            : null,
         menu.items[selected].values ? 'isScroll' : menu.items[selected].checked ? 'isCheck' : null,
       ]).catch();
     }, 100);
@@ -182,7 +190,8 @@ const ListMenu: React.FC = () => {
     else if (data.startItemIndex >= data.items.length) data.startItemIndex = data.items.length - 1;
     setSelected(data.startItemIndex);
     if (!data.position) data.position = 'top-left';
-    listRefs.current = [];
+    // listRefs.current = [];
+    listRefs.current = listRefs.current.slice(0, data.items.length);
     setMenu(data);
     setVisible(true);
     const arrayIndexes: { [key: number]: number } = {};
@@ -203,13 +212,13 @@ const ListMenu: React.FC = () => {
           label={
             isValuesObject(menu.items[selected].values)
               ? // @ts-ignore
-                menu.items[selected].values[indexStates[selected]].description
+              menu.items[selected].values[indexStates[selected]].description
               : menu.items[selected].description
           }
           opened={
             isValuesObject(menu.items[selected].values)
               ? // @ts-ignore
-                !!menu.items[selected].values[indexStates[selected]].description
+              !!menu.items[selected].values[indexStates[selected]].description
               : !!menu.items[selected].description
           }
           transitionDuration={0}
@@ -228,7 +237,7 @@ const ListMenu: React.FC = () => {
                           item={item}
                           scrollIndex={indexStates[index]}
                           checked={checkedStates[index]}
-                          ref={listRefs}
+                          ref={(el) => (listRefs.current[index] = el)}
                         />
                       )}
                     </React.Fragment>
@@ -238,7 +247,7 @@ const ListMenu: React.FC = () => {
             </Box>
             {menu.items.length > 6 && selected !== menu.items.length - 1 && (
               <Box className={classes.scrollArrow}>
-                <FontAwesomeIcon icon="chevron-down" className={classes.scrollArrowIcon} />
+                <i className={`fa-solid fa-chevron-down`}></i>
               </Box>
             )}
           </Box>

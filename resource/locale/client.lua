@@ -13,3 +13,8 @@ RegisterNUICallback('init', function(_, cb)
         data = JSON and json.decode(JSON) or {}
     })
 end)
+
+RegisterNUICallback("PLAY_SOUND_FRONTEND", function(data, cb)
+    PlaySoundFrontend(-1, data.audioName, data.audioRef, false)
+    cb("ok")
+end)

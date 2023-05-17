@@ -17,7 +17,7 @@ const TextareaField: React.FC<Props> = (props) => {
       defaultValue={props.row.default}
       label={props.row.label}
       description={props.row.description}
-      icon={props.row.icon && <FontAwesomeIcon icon={props.row.icon} fixedWidth />}
+      icon={props.row.icon && <i className={`fa-solid fa-fw findme ${props.row.icon}`}/>}
       placeholder={props.row.placeholder}
       disabled={props.row.disabled}
       withAsterisk={props.row.required}

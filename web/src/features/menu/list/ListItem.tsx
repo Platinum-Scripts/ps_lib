@@ -6,15 +6,19 @@ import type { MenuItem } from '../../../typings';
 import { createStyles } from '@mantine/core';
 import { isIconUrl } from '../../../utils/isIconUrl';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { titleCase } from "title-case";
 
 interface Props {
   item: MenuItem;
   index: number;
   scrollIndex: number;
   checked: boolean;
+  ref: React.Ref<HTMLDivElement>; // Change the type to React.Ref<HTMLDivElement>
 }
 
-const useStyles = createStyles((theme, params: { iconColor?: string }) => ({
+const useStyles = createStyles((theme, params: {
+  rightIconColor?: string; iconColor?: string 
+}) => ({
   buttonContainer: {
     backgroundColor: theme.colors.dark[6],
     borderRadius: theme.radius.md,
@@ -42,21 +46,25 @@ const useStyles = createStyles((theme, params: { iconColor?: string }) => ({
   },
   icon: {
     fontSize: 24,
-    color: params.iconColor || theme.colors.dark[2],
+    color: params.iconColor || theme.colors.lighter[1],
+  },
+  rightIcon: {
+    fontSize: "1.5em",
+    color: params.rightIconColor || theme.colors.lighter[1],
   },
   label: {
-    color: theme.colors.dark[2],
-    textTransform: 'uppercase',
+    color: theme.colors.lighter[1],
+    textTransform: 'none',
     fontSize: 12,
     verticalAlign: 'middle',
   },
   chevronIcon: {
     fontSize: 14,
-    color: theme.colors.dark[2],
+    color: theme.colors.lighter[1],
   },
   scrollIndexValue: {
-    color: theme.colors.dark[2],
-    textTransform: 'uppercase',
+    color: theme.colors.lighter[1],
+    textTransform: 'none',
     fontSize: 14,
   },
   progressStack: {
@@ -69,19 +77,18 @@ const useStyles = createStyles((theme, params: { iconColor?: string }) => ({
   },
 }));
 
-const ListItem = forwardRef<Array<HTMLDivElement | null>, Props>(({ item, index, scrollIndex, checked }, ref) => {
-  const { classes } = useStyles({ iconColor: item.iconColor });
+const ListItem = forwardRef<HTMLDivElement, Props>(({ item, index, scrollIndex, checked }, ref) => {
+  const { classes } = useStyles({
+    iconColor: item.iconColor,
+    rightIconColor: item.rightIconColor,
+  });
 
   return (
     <Box
       tabIndex={index}
       className={classes.buttonContainer}
       key={`item-${index}`}
-      ref={(element: HTMLDivElement) => {
-        if (ref)
-          // @ts-ignore i cba
-          return (ref.current = [...ref.current, element]);
-      }}
+      ref={ref} // Update the ref assignment
     >
       <Group spacing={15} noWrap className={classes.buttonWrapper}>
         {item.icon && (
@@ -89,27 +96,27 @@ const ListItem = forwardRef<Array<HTMLDivElement | null>, Props>(({ item, index,
             {typeof item.icon === 'string' && isIconUrl(item.icon) ? (
               <img src={item.icon} alt="Missing image" className={classes.iconImage} />
             ) : (
-              <FontAwesomeIcon icon={item.icon as IconProp} className={classes.icon} fixedWidth />
+              <i className={`fa-solid fa-fw findme ${item.icon} ${classes.icon}`}/>
             )}
           </Box>
         )}
         {Array.isArray(item.values) ? (
           <Group position="apart" w="100%">
             <Stack spacing={0} justify="space-between">
-              <Text className={classes.label}>{item.label}</Text>
+              <Text className={classes.label}>{titleCase(item.label)}</Text>
               <Text>
                 {typeof item.values[scrollIndex] === 'object'
                   ? // @ts-ignore for some reason even checking the type TS still thinks it's a string
-                    item.values[scrollIndex].label
+                  item.values[scrollIndex].label
                   : item.values[scrollIndex]}
               </Text>
             </Stack>
             <Group spacing={1} position="center">
-              <FontAwesomeIcon icon="chevron-left" className={classes.chevronIcon} />
+              <i className={`fa-solid fa-chevron-left`}></i>
               <Text className={classes.scrollIndexValue}>
                 {scrollIndex + 1}/{item.values.length}
               </Text>
-              <FontAwesomeIcon icon="chevron-right" className={classes.chevronIcon} />
+              <i className={`fa-solid fa-chevron-right`}></i>
             </Group>
           </Group>
         ) : item.checked !== undefined ? (
@@ -126,8 +133,13 @@ const ListItem = forwardRef<Array<HTMLDivElement | null>, Props>(({ item, index,
               styles={(theme) => ({ root: { backgroundColor: theme.colors.dark[3] } })}
             />
           </Stack>
+        ) : item.rightIcon !== undefined ? (
+          <Group position="apart" w="100%">
+            <Text>{item.label}</Text>
+            <i className={`fa-fw ${item.rightIcon} ${classes.rightIcon}`}></i>
+          </Group>
         ) : (
-          <Text>{item.label}</Text>
+          <Text>{titleCase(item.label)}</Text>
         )}
       </Group>
     </Box>

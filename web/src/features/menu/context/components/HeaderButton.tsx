@@ -23,7 +23,7 @@ const useStyles = createStyles((theme, params: { canClose?: boolean }) => ({
     border: 'none',
   },
   label: {
-    color: params.canClose === false ? theme.colors.dark[2] : theme.colors.dark[0],
+    color: params.canClose === false ? theme.colors.lighter[1] : theme.colors.dark[0],
   },
 }));
 
@@ -38,7 +38,7 @@ const HeaderButton: React.FC<Props> = ({ icon, canClose, iconSize, handleClick }
       disabled={canClose === false}
       onClick={handleClick}
     >
-      <FontAwesomeIcon icon={icon} fontSize={iconSize} fixedWidth />
+      <i className={`fa-solid fa-fw findme ${icon}`} style={{fontSize: iconSize}} />
     </Button>
   );
 };

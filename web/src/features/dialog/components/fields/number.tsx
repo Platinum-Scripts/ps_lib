@@ -31,7 +31,7 @@ const NumberField: React.FC<Props> = (props) => {
       min={props.row.min}
       max={props.row.max}
       disabled={props.row.disabled}
-      icon={props.row.icon && <FontAwesomeIcon icon={props.row.icon} fixedWidth />}
+      icon={props.row.icon && <i className={`fa-solid fa-fw findme ${props.row.icon}`}/>}
       withAsterisk={props.row.required}
     />
   );

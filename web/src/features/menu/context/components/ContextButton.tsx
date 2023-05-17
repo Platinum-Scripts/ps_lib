@@ -32,7 +32,7 @@ const useStyles = createStyles((theme, params: { disabled?: boolean }) => ({
     maxWidth: '25px',
   },
   description: {
-    color: params.disabled ? theme.colors.dark[3] : theme.colors.dark[2],
+    color: params.disabled ? theme.colors.dark[3] : theme.colors.lighter[1],
     fontSize: 12,
   },
   dropdown: {
@@ -122,7 +122,7 @@ const ContextButton: React.FC<{
               </Stack>
               {(button.menu || button.arrow) && button.arrow !== false && (
                 <Stack className={classes.buttonArrowContainer}>
-                  <FontAwesomeIcon icon="chevron-right" fixedWidth />
+                  <i className={`fa-solid fa-fw fa-chevron-right`}/>
                 </Stack>
               )}
             </Group>

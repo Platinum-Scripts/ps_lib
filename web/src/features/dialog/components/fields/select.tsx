@@ -32,7 +32,7 @@ const SelectField: React.FC<Props> = (props) => {
           description={props.row.description}
           withAsterisk={props.row.required}
           clearable={props.row.clearable}
-          icon={props.row.icon && <FontAwesomeIcon icon={props.row.icon} fixedWidth />}
+          icon={props.row.icon && <i className={`fa-solid fa-fw findme ${props.row.icon}`}/>}
         />
       ) : (
         <>
@@ -49,7 +49,7 @@ const SelectField: React.FC<Props> = (props) => {
               description={props.row.description}
               withAsterisk={props.row.required}
               clearable={props.row.clearable}
-              icon={props.row.icon && <FontAwesomeIcon icon={props.row.icon} fixedWidth />}
+              icon={props.row.icon && <i className={`fa-solid fa-fw findme ${props.row.icon}`}/>}
             />
           )}
         </>

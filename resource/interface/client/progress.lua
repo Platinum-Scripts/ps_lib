@@ -147,8 +147,10 @@ local function startProgress(data)
     end
 
     playerState.invBusy = false
+    local cancel = progress == false
+    progress = nil
 
-    if progress == false then
+    if cancel then
         SendNUIMessage({ action = 'progressCancel' })
         return false
     end
@@ -159,7 +161,7 @@ end
 ---@param data ProgressProps
 ---@return boolean?
 function lib.progressBar(data)
-    while progress ~= nil do Wait(0) end
+    while progress ~= nil do Wait(100) end
 
     if not interruptProgress(data) then
         SendNUIMessage({
@@ -177,7 +179,7 @@ end
 ---@param data ProgressProps
 ---@return boolean?
 function lib.progressCircle(data)
-    while progress ~= nil do Wait(0) end
+    while progress ~= nil do Wait(100) end
 
     if not interruptProgress(data) then
         SendNUIMessage({

@@ -27,7 +27,7 @@ const Dev: React.FC = () => {
           mr={50}
           mb={50}
         >
-          <FontAwesomeIcon icon="wrench" fontSize={24} />
+          <i className={`fa-solid fa-wrench fa-2x`}></i>
         </ActionIcon>
       </Tooltip>
 
