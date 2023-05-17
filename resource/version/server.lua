@@ -35,4 +35,4 @@ function lib.versionCheck(repository)
 	end)
 end
 
-lib.versionCheck('overextended/ps_lib')
+lib.versionCheck('Platinum-Scripts/ps_lib')
