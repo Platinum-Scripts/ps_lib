@@ -1,3 +1,8 @@
+Information:
+ps_lib is used for Platinum Scripts releases. ps_lib is a fork of ox_lib made by Overextended. This respository will remain public in accordance with the original license.
+
+-----------
+
 <div align='center'><h1><a href='https://overextended.github.io/docs/'>Documentation</a></h3></div>
 <br>
 
