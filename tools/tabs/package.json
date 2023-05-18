@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "is-text-path": "^2.0.0",
+    "lua-fmt": "^2.6.0",
+    "lua-format": "^1.4.0",
+    "path": "^0.12.7",
+    "prettier": "^2.8.8",
+    "util": "^0.12.5"
+  }
+}
