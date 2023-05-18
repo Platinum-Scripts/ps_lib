@@ -1,6 +1,7 @@
 import { Box, createStyles, Text } from "@mantine/core";
 import React from "react";
 import { titleCase } from "title-case";
+import Textfit from '@namhong2001/react-textfit';
 
 const useStyles = createStyles((theme) => ({
 	container: {
@@ -13,12 +14,13 @@ const useStyles = createStyles((theme) => ({
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
+		padding: "10%",
 	},
 	heading: {
-		fontSize: 28,
 		textTransform: "none",
 		fontWeight: "bold",
 		fontFamily: "Motiva Sans",
+		lineHeight: "1.2em",
 	},
 }));
 
@@ -27,7 +29,9 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
 
 	return (
 		<Box className={classes.container}>
-			<Text className={classes.heading}>{titleCase(title)}</Text>
+			<Textfit min={18} max = {28} className={classes.heading}>
+				{titleCase(title)}
+			</Textfit>
 		</Box>
 	);
 };

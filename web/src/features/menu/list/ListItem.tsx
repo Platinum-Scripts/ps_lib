@@ -7,6 +7,7 @@ import { createStyles } from "@mantine/core";
 import { isIconUrl } from "../../../utils/isIconUrl";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { titleCase } from "title-case";
+import Textfit from '@namhong2001/react-textfit';
 
 interface Props {
 	item: MenuItem;
@@ -34,6 +35,7 @@ const useStyles = createStyles(
 				backgroundColor: theme.colors.lighter[3],
 				outline: "none",
 			},
+			maxWidth: 384,
 		},
 		iconImage: {
 			maxWidth: 32,
@@ -42,6 +44,7 @@ const useStyles = createStyles(
 			paddingLeft: 5,
 			paddingRight: 12,
 			height: "100%",
+			maxWidth: 368,
 		},
 		iconContainer: {
 			display: "flex",
@@ -84,6 +87,11 @@ const useStyles = createStyles(
 			color: "grey",
 			opacity: 0.5,
 		},
+		textContainer: {
+			maxWidth: 221,
+			minWidth: 0,  // This will prevent the text from pushing other items out
+			overflow: 'hidden',  // This will prevent the text from spilling over outside the container
+		},
 	})
 );
 
@@ -99,9 +107,8 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 		return (
 			<Box
 				tabIndex={item.disabled ? -1 : index} // make untabbable if disabled
-				className={`${classes.buttonContainer} ${
-					item.disabled ? classes.disabled : ""
-				}`}
+				className={`${classes.buttonContainer} ${item.disabled ? classes.disabled : ""
+					}`}
 				key={`item-${index}`}
 				ref={ref}
 				style={{ pointerEvents: item.disabled ? "none" : "auto" }} // make unclickable if disabled
@@ -124,18 +131,18 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 					)}
 					{Array.isArray(item.values) ? (
 						<Group position="apart" w="100%">
-							<Stack spacing={0} justify="space-between">
-								<Text className={classes.label}>
+							<Stack spacing={0} justify="space-between" className={classes.textContainer}>
+								<Text className={`${classes.label}`} style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
 									{titleCase(item.label)}
 								</Text>
-								<Text>
-									{typeof item.values[scrollIndex] ===
-									"object"
+								<Textfit min ={12} max = {16}>
+									{typeof item.values[scrollIndex] === "object"
 										? // @ts-ignore for some reason even checking the type TS still thinks it's a string
-										  item.values[scrollIndex].label
+										item.values[scrollIndex].label
 										: item.values[scrollIndex]}
-								</Text>
+								</Textfit>
 							</Stack>
+
 							<Group spacing={1} position="center">
 								<i className={`fa-solid fa-chevron-left`}></i>
 								<Text className={classes.scrollIndexValue}>
@@ -146,12 +153,12 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 						</Group>
 					) : item.checked !== undefined ? (
 						<Group position="apart" w="100%">
-							<Text>{item.label}</Text>
+							<Text className={`${classes.textContainer}`}>{item.label}</Text>
 							<CustomCheckbox checked={checked}></CustomCheckbox>
 						</Group>
 					) : item.progress !== undefined ? (
-						<Stack className={classes.progressStack} spacing={0}>
-							<Text className={classes.progressLabel}>
+						<Stack className={`${classes.progressStack}`} spacing={0}>
+							<Text className={`${classes.progressLabel} ${classes.textContainer}`}>
 								{item.label}
 							</Text>
 							<Progress
@@ -166,7 +173,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 						</Stack>
 					) : item.rightIcon !== undefined ? (
 						<Group position="apart" w="100%">
-							<Text>{item.label}</Text>
+							<Text className={classes.textContainer}>{item.label}</Text>
 							<i
 								className={`fa-fw ${item.rightIcon} ${classes.rightIcon}`}
 							></i>
