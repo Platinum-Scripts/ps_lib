@@ -75,28 +75,35 @@ const useStyles = createStyles((theme, params: {
     verticalAlign: 'middle',
     marginBottom: 3,
   },
+  disabled: {
+    color: "grey",
+    opacity: 0.5,
+  },
 }));
 
 const ListItem = forwardRef<HTMLDivElement, Props>(({ item, index, scrollIndex, checked }, ref) => {
   const { classes } = useStyles({
-    iconColor: item.iconColor,
+    iconColor: item.disabled ? 'grey' : item.iconColor,
     rightIconColor: item.rightIconColor,
   });
 
+  const icon = item.disabled ? 'fa-lock' : item.icon;
+
   return (
     <Box
-      tabIndex={index}
-      className={classes.buttonContainer}
+      tabIndex={item.disabled ? -1 : index} // make untabbable if disabled
+      className={`${classes.buttonContainer} ${item.disabled ? classes.disabled : ''}`}
       key={`item-${index}`}
-      ref={ref} // Update the ref assignment
+      ref={ref}
+      style={{ pointerEvents: item.disabled ? 'none' : 'auto' }} // make unclickable if disabled
     >
       <Group spacing={15} noWrap className={classes.buttonWrapper}>
-        {item.icon && (
+        {icon && (
           <Box className={classes.iconContainer}>
-            {typeof item.icon === 'string' && isIconUrl(item.icon) ? (
-              <img src={item.icon} alt="Missing image" className={classes.iconImage} />
+            {typeof icon === 'string' && isIconUrl(icon) ? (
+              <img src={icon} alt="Missing image" className={classes.iconImage} />
             ) : (
-              <i className={`fa-solid fa-fw findme ${item.icon} ${classes.icon}`}/>
+              <i className={`fa-solid fa-fw findme ${icon} ${classes.icon}`}/>
             )}
           </Box>
         )}

@@ -3,8 +3,9 @@ import { toast, Toaster } from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactMarkdown from 'react-markdown';
 import { Avatar, createStyles, Group, Stack, Box, Text, keyframes } from '@mantine/core';
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import type { NotificationProps } from '../../typings';
+import { ListMenuContext } from '../../App';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -103,6 +104,13 @@ const exitAnimationBottom = keyframes({
 });
 
 const Notifications: React.FC = () => {
+  const listMenuContext = useContext(ListMenuContext);
+
+  const isListMenuOpen = listMenuContext?.isListMenuOpen || false;
+  const setListMenuOpen = listMenuContext?.setListMenuOpen;
+  const listMenuPosition = listMenuContext?.listMenuPosition || 'top-left';
+  const setListMenuPosition = listMenuContext?.setListMenuPosition;
+
   const { classes } = useStyles();
 
   useNuiEvent<NotificationProps>('notify', (data) => {
@@ -115,6 +123,9 @@ const Notifications: React.FC = () => {
         break;
       case 'bottom':
         position = 'bottom-center';
+        break;
+      case undefined:
+        position = 'top-right';
         break;
     }
     if (!data.icon) {
@@ -135,7 +146,34 @@ const Notifications: React.FC = () => {
     } else if (!data.icon.startsWith('fa-')) {
       data.icon = `fa-${data.icon}`;
     }
-    
+
+    if ((position && typeof position === "string") && (listMenuPosition && typeof listMenuPosition === "string")) {
+      switch (listMenuPosition) {
+        case 'top-left':
+          if (position === 'top-left') {
+            position = 'top-center';
+          }
+          break;
+        case 'top-right':
+          if (position === 'top-right') {
+            position = 'top-center';
+          }
+          break;
+        case 'bottom-left':
+          if (position === 'bottom-left') {
+            position = 'bottom-center';
+          }
+          break;
+        case 'bottom-right':
+          if (position === 'bottom-right') {
+            position = 'bottom-center';
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
     toast.custom(
       (t) => (
         <Box
@@ -186,7 +224,7 @@ const Notifications: React.FC = () => {
       {
         id: data.id?.toString(),
         duration: data.duration || 3000,
-        position: position || 'top-right',
+        position: position,
       }
     );
   });

@@ -15,8 +15,19 @@ import SkillCheck from './features/skillcheck';
 import RadialMenu from './features/menu/radial';
 import { theme } from './theme';
 import { MantineProvider } from '@mantine/core';
+import React, { createContext, useState, useContext } from 'react';
+import { ListMenuContextType } from './typings/menu';
+
+export const ListMenuContext = createContext<ListMenuContextType | undefined>(undefined);
 
 const App: React.FC = () => {
+
+  // state to hold whether ListMenu is open or not
+  const [isListMenuOpen, setListMenuOpen] = useState(false);
+
+  // state to hold ListMenu position
+  const [listMenuPosition, setListMenuPosition] = useState<string | null>("top-left");
+
   useNuiEvent('setClipboard', (data: string) => {
     setClipboard(data);
   });
@@ -24,19 +35,21 @@ const App: React.FC = () => {
   fetchNui('init');
 
   return (
-    <MantineProvider withNormalizeCSS withGlobalStyles theme={{ ...theme }}>
-      <Progressbar />
-      <CircleProgressbar />
-      <Notifications />
-      <TextUI />
-      <InputDialog />
-      <AlertDialog />
-      <ContextMenu />
-      <ListMenu />
-      <RadialMenu />
-      <SkillCheck />
-      {isEnvBrowser() && <Dev />}
-    </MantineProvider>
+    <ListMenuContext.Provider value={{ isListMenuOpen, setListMenuOpen, listMenuPosition, setListMenuPosition }}>
+      <MantineProvider withNormalizeCSS withGlobalStyles theme={{ ...theme }}>
+        <Progressbar />
+        <CircleProgressbar />
+        <Notifications />
+        <TextUI />
+        <InputDialog />
+        <AlertDialog />
+        <ContextMenu />
+        <ListMenu />
+        <RadialMenu />
+        <SkillCheck />
+        {isEnvBrowser() && <Dev />}
+      </MantineProvider>
+    </ListMenuContext.Provider>
   );
 };
 

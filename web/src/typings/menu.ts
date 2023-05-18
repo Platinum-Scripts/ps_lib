@@ -16,6 +16,7 @@ export interface MenuItem {
   rightIconColor?: string;
   defaultIndex?: number;
   close?: boolean;
+  disabled?: boolean;
 }
 
 export interface MenuSettings {
@@ -25,3 +26,10 @@ export interface MenuSettings {
   items: Array<MenuItem>;
   startItemIndex?: number;
 }
+
+export type ListMenuContextType = {
+  isListMenuOpen: boolean;
+  setListMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  listMenuPosition: string | null;
+  setListMenuPosition: React.Dispatch<React.SetStateAction<string | null>>;
+};

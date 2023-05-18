@@ -1,5 +1,5 @@
 import { Box, createStyles, Stack, Tooltip } from '@mantine/core';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useNuiEvent } from '../../../hooks/useNuiEvent';
 import ListItem from './ListItem';
 import Header from './Header';
@@ -8,6 +8,7 @@ import { fetchNui } from '../../../utils/fetchNui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import type { MenuPosition, MenuSettings } from '../../../typings';
+import { ListMenuContext } from '../../../App';
 
 const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCount: number; selected: number }) => ({
   tooltip: {
@@ -65,6 +66,13 @@ const ListMenu: React.FC = () => {
   const firstRenderRef = useRef(false);
   const { classes } = useStyles({ position: menu.position, itemCount: menu.items.length, selected });
 
+  const listMenuContext = useContext(ListMenuContext);
+
+  const isListMenuOpen = listMenuContext?.isListMenuOpen || false;
+  const setListMenuOpen = listMenuContext?.setListMenuOpen;
+  const listMenuPosition = listMenuContext?.listMenuPosition || 'top-left';
+  const setListMenuPosition = listMenuContext?.setListMenuPosition;
+
   const closeMenu = (ignoreFetch?: boolean, keyPressed?: string, forceClose?: boolean) => {
     if (menu.canClose === false && !forceClose) return;
     setVisible(false);
@@ -91,31 +99,38 @@ const ListMenu: React.FC = () => {
       case 'ArrowRight':
         if (Array.isArray(menu.items[selected].values))
           fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
-          setIndexStates({
-            ...indexStates,
-            [selected]:
-              indexStates[selected] + 1 <= menu.items[selected].values?.length! - 1 ? indexStates[selected] + 1 : 0,
-          });
+        setIndexStates({
+          ...indexStates,
+          [selected]:
+            indexStates[selected] + 1 <= menu.items[selected].values?.length! - 1 ? indexStates[selected] + 1 : 0,
+        });
         break;
       case 'ArrowLeft':
         if (Array.isArray(menu.items[selected].values))
           fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
-          setIndexStates({
-            ...indexStates,
-            [selected]:
-              indexStates[selected] - 1 >= 0 ? indexStates[selected] - 1 : menu.items[selected].values?.length! - 1,
-          });
+        setIndexStates({
+          ...indexStates,
+          [selected]:
+            indexStates[selected] - 1 >= 0 ? indexStates[selected] - 1 : menu.items[selected].values?.length! - 1,
+        });
 
         break;
       case 'Enter':
         if (!menu.items[selected]) return;
+
+        if (menu.items[selected]?.disabled) {
+          fetchNui("PLAY_SOUND_FRONTEND", { audioName: "ERROR", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
+          return;
+        }
+
         if (menu.items[selected].checked !== undefined && !menu.items[selected].values) {
-          fetchNui("PLAY_SOUND_FRONTEND", { audioName: "Pin_Centred", audioRef: "DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS" }).catch();
+          fetchNui("PLAY_SOUND_FRONTEND", { audioName: "TOGGLE_ON", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
           return setCheckedStates({
             ...checkedStates,
             [selected]: !checkedStates[selected],
           });
         }
+
         fetchNui("PLAY_SOUND_FRONTEND", { audioName: "SELECT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
         fetchNui('confirmSelected', [selected, indexStates[selected]]).catch();
         if (menu.items[selected].close === undefined || menu.items[selected].close) setVisible(false);
@@ -190,6 +205,9 @@ const ListMenu: React.FC = () => {
     else if (data.startItemIndex >= data.items.length) data.startItemIndex = data.items.length - 1;
     setSelected(data.startItemIndex);
     if (!data.position) data.position = 'top-left';
+    if (setListMenuPosition !== undefined) {
+      setListMenuPosition(data.position);
+    }
     // listRefs.current = [];
     listRefs.current = listRefs.current.slice(0, data.items.length);
     setMenu(data);
@@ -205,6 +223,11 @@ const ListMenu: React.FC = () => {
     listRefs.current[data.startItemIndex]?.focus();
   });
 
+  useEffect(() => {
+    if (setListMenuOpen === undefined) return;
+    setListMenuOpen(visible);
+  }, [visible]);
+
   return (
     <>
       {visible && (
@@ -212,8 +235,8 @@ const ListMenu: React.FC = () => {
           label={
             isValuesObject(menu.items[selected].values)
               ? // @ts-ignore
-              menu.items[selected].values[indexStates[selected]].description
-              : menu.items[selected].description
+              `${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`
+              : `${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`
           }
           opened={
             isValuesObject(menu.items[selected].values)
