@@ -1,35 +1,39 @@
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
-export type MenuPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type MenuPosition =
+	| "top-left"
+	| "top-right"
+	| "bottom-left"
+	| "bottom-right";
 
 export interface MenuItem {
-  image?: string;
-  label: string;
-  progress?: number;
-  colorScheme?: string;
-  checked?: boolean;
-  values?: Array<string | { label: string; description: string }>;
-  description?: string;
-  icon?: IconProp | string;
-  iconColor?: string;
-  rightIcon?: IconProp | string;
-  rightIconColor?: string;
-  defaultIndex?: number;
-  close?: boolean;
-  disabled?: boolean;
+	image?: string;
+	label: string;
+	progress?: number;
+	colorScheme?: string;
+	checked?: boolean;
+	values?: Array<string | { label: string; description: string }>;
+	description?: string;
+	icon?: IconProp | string;
+	iconColor?: string;
+	rightIcon?: IconProp | string;
+	rightIconColor?: string;
+	defaultIndex?: number;
+	close?: boolean;
+	disabled?: boolean;
 }
 
 export interface MenuSettings {
-  position?: MenuPosition;
-  title: string;
-  canClose?: boolean;
-  items: Array<MenuItem>;
-  startItemIndex?: number;
+	position?: MenuPosition;
+	title: string;
+	canClose?: boolean;
+	items: Array<MenuItem>;
+	startItemIndex?: number;
 }
 
 export type ListMenuContextType = {
-  isListMenuOpen: boolean;
-  setListMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  listMenuPosition: string | null;
-  setListMenuPosition: React.Dispatch<React.SetStateAction<string | null>>;
+	isListMenuOpen: boolean;
+	setListMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	listMenuPosition: string | null;
+	setListMenuPosition: React.Dispatch<React.SetStateAction<string | null>>;
 };

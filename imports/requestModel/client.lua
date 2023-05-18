@@ -3,31 +3,35 @@
 ---@param timeout number? Number of ticks to wait for the model to load. Default is 500.
 ---@return number? model
 function lib.requestModel(model, timeout)
-    if not tonumber(model) then model = joaat(model) end
-    ---@cast model -string
-    if HasModelLoaded(model) then return model end
+	if not tonumber(model) then
+		model = joaat(model)
+	end
+	---@cast model -string
+	if HasModelLoaded(model) then
+		return model
+	end
 
-    if not IsModelValid(model) then
-        return error(("attempted to load invalid model '%s'"):format(model))
-    end
+	if not IsModelValid(model) then
+		return error(("attempted to load invalid model '%s'"):format(model))
+	end
 
-    RequestModel(model)
+	RequestModel(model)
 
-    if coroutine.running() then
-        timeout = tonumber(timeout) or 500
+	if coroutine.running() then
+		timeout = tonumber(timeout) or 500
 
-        for _ = 1, timeout do
-            if HasModelLoaded(model) then
-                return model
-            end
+		for _ = 1, timeout do
+			if HasModelLoaded(model) then
+				return model
+			end
 
-            Wait(0)
-        end
+			Wait(0)
+		end
 
-        print(("failed to load model '%s' after %s ticks"):format(model, timeout))
-    end
+		print(("failed to load model '%s' after %s ticks"):format(model, timeout))
+	end
 
-    return model
+	return model
 end
 
 return lib.requestModel

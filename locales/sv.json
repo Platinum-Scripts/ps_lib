@@ -1,9 +1,9 @@
 {
-  "language": "Svenska",
-  "ui": {
-    "cancel": "Avbryt",
-    "close": "Stäng",
-    "confirm": "Acceptera",
-    "more": "More..."
-  }
+	"language": "Svenska",
+	"ui": {
+		"cancel": "Avbryt",
+		"close": "Stäng",
+		"confirm": "Acceptera",
+		"more": "More..."
+	}
 }

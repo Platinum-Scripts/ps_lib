@@ -1,9 +1,9 @@
 {
-    "language": "Norsk",
-    "ui": {
-    "cancel": "Avbryt",
-    "close": "Lukk",
-    "confirm": "Bekreft",
-    "more": "Mer..."
-    }
-  }
+	"language": "Norsk",
+	"ui": {
+		"cancel": "Avbryt",
+		"close": "Lukk",
+		"confirm": "Bekreft",
+		"more": "Mer..."
+	}
+}

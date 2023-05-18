@@ -22,39 +22,41 @@
 ---@param extraWeaponComponentFlags ExtraWeaponComponentFlags? Default is 0.
 ---@return string | number? weaponType
 function lib.requestWeaponAsset(weaponType, timeout, weaponResourceFlags, extraWeaponComponentFlags)
-    if HasWeaponAssetLoaded(weaponType) then return weaponType end
+	if HasWeaponAssetLoaded(weaponType) then
+		return weaponType
+	end
 
-    local weaponTypeType = type(weaponType) --kekw
+	local weaponTypeType = type(weaponType) --kekw
 
-    if weaponTypeType ~= 'string' and weaponTypeType ~= 'number' then
-        error(("expected weaponType to have type 'string' or 'number' (received %s)"):format(weaponTypeType))
-    end
+	if weaponTypeType ~= "string" and weaponTypeType ~= "number" then
+		error(("expected weaponType to have type 'string' or 'number' (received %s)"):format(weaponTypeType))
+	end
 
-    if weaponResourceFlags and type(weaponResourceFlags) ~= 'number' then
-        error(("expected weaponResourceFlags to have type 'number' (received %s)"):format(type(weaponResourceFlags)))
-    end
+	if weaponResourceFlags and type(weaponResourceFlags) ~= "number" then
+		error(("expected weaponResourceFlags to have type 'number' (received %s)"):format(type(weaponResourceFlags)))
+	end
 
-    if extraWeaponComponentFlags and type(extraWeaponComponentFlags) ~= 'number' then
-        error(("expected extraWeaponComponentFlags to have type 'number' (received %s)"):format(type(extraWeaponComponentFlags)))
-    end
+	if extraWeaponComponentFlags and type(extraWeaponComponentFlags) ~= "number" then
+		error(("expected extraWeaponComponentFlags to have type 'number' (received %s)"):format(type(extraWeaponComponentFlags)))
+	end
 
-    RequestWeaponAsset(weaponType, weaponResourceFlags or 31, extraWeaponComponentFlags or 0)
+	RequestWeaponAsset(weaponType, weaponResourceFlags or 31, extraWeaponComponentFlags or 0)
 
-    if coroutine.running() then
-        timeout = tonumber(timeout) or 500
+	if coroutine.running() then
+		timeout = tonumber(timeout) or 500
 
-        for _ = 1, timeout do
-            if HasWeaponAssetLoaded(weaponType) then
-                return weaponType
-            end
+		for _ = 1, timeout do
+			if HasWeaponAssetLoaded(weaponType) then
+				return weaponType
+			end
 
-            Wait(0)
-        end
+			Wait(0)
+		end
 
-        print(("failed to load weaponType '%s' after %s ticks"):format(weaponType, timeout))
-    end
+		print(("failed to load weaponType '%s' after %s ticks"):format(weaponType, timeout))
+	end
 
-    return weaponType
+	return weaponType
 end
 
 return lib.requestWeaponAsset

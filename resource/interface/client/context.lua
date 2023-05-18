@@ -28,49 +28,49 @@ local openContextMenu = nil
 ---@field options { [string]: ContextMenuItem } | ContextMenuArrayItem[]
 
 local function closeContext(_, cb, onExit)
-    if cb then cb(1) end
+      if cb then cb(1) end
 
-    lib.resetNuiFocus()
+      lib.resetNuiFocus()
 
-    if not openContextMenu then return end
+      if not openContextMenu then return end
 
-    if (cb or onExit) and contextMenus[openContextMenu].onExit then contextMenus[openContextMenu].onExit() end
+      if (cb or onExit) and contextMenus[openContextMenu].onExit then contextMenus[openContextMenu].onExit() end
 
-    if not cb then SendNUIMessage({ action = 'hideContext' }) end
+      if not cb then SendNUIMessage({ action = 'hideContext' }) end
 
-    openContextMenu = nil
+      openContextMenu = nil
 end
 
 ---@param id string
 function lib.showContext(id)
-    if not contextMenus[id] then error('No context menu of such id found.') end
+      if not contextMenus[id] then error('No context menu of such id found.') end
 
-    local data = contextMenus[id]
-    openContextMenu = id
+      local data = contextMenus[id]
+      openContextMenu = id
 
-    lib.setNuiFocus(false)
+      lib.setNuiFocus(false)
 
-    SendNuiMessage(json.encode({
-        action = 'showContext',
-        data = {
-            title = data.title,
-            canClose = data.canClose,
-            menu = data.menu,
-            options = data.options
-        }
-    }, { sort_keys = true }))
+      SendNuiMessage(json.encode({
+          action = 'showContext',
+          data = {
+              title = data.title,
+              canClose = data.canClose,
+              menu = data.menu,
+              options = data.options
+          }
+      }, { sort_keys = true }))
 end
 
 ---@param context ContextMenuProps | ContextMenuProps[]
 function lib.registerContext(context)
-    for k, v in pairs(context) do
-        if type(k) == 'number' then
-            contextMenus[v.id] = v
-        else
-            contextMenus[context.id] = context
-            break
-        end
-    end
+      for k, v in pairs(context) do
+          if type(k) == 'number' then
+              contextMenus[v.id] = v
+          else
+              contextMenus[context.id] = context
+              break
+          end
+      end
 end
 
 ---@return string?
@@ -80,32 +80,32 @@ function lib.getOpenContextMenu() return openContextMenu end
 function lib.hideContext(onExit) closeContext(nil, nil, onExit) end
 
 RegisterNUICallback('openContext', function(data, cb)
-    if data.back and contextMenus[openContextMenu].onBack then contextMenus[openContextMenu].onBack() end
-    cb(1)
-    lib.showContext(data.id)
+      if data.back and contextMenus[openContextMenu].onBack then contextMenus[openContextMenu].onBack() end
+      cb(1)
+      lib.showContext(data.id)
 end)
 
 RegisterNUICallback('clickContext', function(id, cb)
-    cb(1)
+      cb(1)
 
-    if math.type(tonumber(id)) == 'float' then
-        id = math.tointeger(id)
-    elseif tonumber(id) then
-        id += 1
-    end
+      if math.type(tonumber(id)) == 'float' then
+          id = math.tointeger(id)
+      elseif tonumber(id) then
+          id += 1
+      end
 
-    local data = contextMenus[openContextMenu].options[id]
+      local data = contextMenus[openContextMenu].options[id]
 
-    if not data.event and not data.serverEvent and not data.onSelect then return end
+      if not data.event and not data.serverEvent and not data.onSelect then return end
 
-    openContextMenu = nil
+      openContextMenu = nil
 
-    SendNUIMessage({ action = 'hideContext' })
-    lib.resetNuiFocus()
+      SendNUIMessage({ action = 'hideContext' })
+      lib.resetNuiFocus()
 
-    if data.onSelect then data.onSelect(data.args) end
-    if data.event then TriggerEvent(data.event, data.args) end
-    if data.serverEvent then TriggerServerEvent(data.serverEvent, data.args) end
+      if data.onSelect then data.onSelect(data.args) end
+      if data.event then TriggerEvent(data.event, data.args) end
+      if data.serverEvent then TriggerServerEvent(data.serverEvent, data.args) end
 end)
 
 RegisterNUICallback('closeContext', closeContext)

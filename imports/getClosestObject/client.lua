@@ -3,15 +3,15 @@
 ---@return number? object
 ---@return vector3? objectCoords
 function lib.getClosestObject(coords, maxDistance)
-	local objects = GetGamePool('CObject')
+	local objects = GetGamePool("CObject")
 	local closestObject, closestCoords
 	maxDistance = maxDistance or 2.0
 
-	for i = 1, #objects do
+	for i = 1, # objects do
 		local object = objects[i]
 
 		local objectCoords = GetEntityCoords(object)
-		local distance = #(coords - objectCoords)
+		local distance = # (coords - objectCoords)
 
 		if distance < maxDistance then
 			maxDistance = distance

@@ -1,9 +1,9 @@
 {
-  "language": "Italiano",
-  "ui": {
-    "cancel": "Annulla",
-    "close": "Chiudere",
-    "confirm": "Confermare",
-    "more": "Di più..."
-  }
+	"language": "Italiano",
+	"ui": {
+		"cancel": "Annulla",
+		"close": "Chiudere",
+		"confirm": "Confermare",
+		"more": "Di più..."
+	}
 }

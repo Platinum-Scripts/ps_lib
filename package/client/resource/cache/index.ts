@@ -1,4 +1,4 @@
-import { cache, onCache } from '../../../shared';
+import { cache, onCache } from "../../../shared";
 
 cache.playerId = PlayerId();
 cache.serverId = GetPlayerServerId(cache.playerId);

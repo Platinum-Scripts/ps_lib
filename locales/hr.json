@@ -1,9 +1,9 @@
 {
-  "language": "Hrvatski",
-  "ui": {
-    "cancel": "Odustani",
-    "close": "Zatvori",
-    "confirm": "Potvrdi",
-    "more": "Više..."
-  }
+	"language": "Hrvatski",
+	"ui": {
+		"cancel": "Odustani",
+		"close": "Zatvori",
+		"confirm": "Potvrdi",
+		"more": "Više..."
+	}
 }

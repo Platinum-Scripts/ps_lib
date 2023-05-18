@@ -9,13 +9,13 @@ function lib.getClosestPlayer(coords, maxDistance, includePlayer)
 	local closestId, closestPed, closestCoords
 	maxDistance = maxDistance or 2.0
 
-	for i = 1, #players do
+	for i = 1, # players do
 		local playerId = players[i]
 
 		if playerId ~= cache.playerId or includePlayer then
 			local playerPed = GetPlayerPed(playerId)
 			local playerCoords = GetEntityCoords(playerPed)
-			local distance = #(coords - playerCoords)
+			local distance = # (coords - playerCoords)
 
 			if distance < maxDistance then
 				maxDistance = distance

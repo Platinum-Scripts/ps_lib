@@ -1,9 +1,9 @@
 {
-  "language": "Čeština",
-  "ui": {
-    "cancel": "Zrušit",
-    "close": "Zavřít",
-    "confirm": "Potvrdit",
-    "more": "More..."
-  }
+	"language": "Čeština",
+	"ui": {
+		"cancel": "Zrušit",
+		"close": "Zavřít",
+		"confirm": "Potvrdit",
+		"more": "More..."
+	}
 }

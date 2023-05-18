@@ -1,1 +1,2 @@
-export const versionCheck = (repository: string) => exports.ps_lib.versionCheck(repository);
+export const versionCheck = (repository: string) =>
+	exports.ps_lib.versionCheck(repository);

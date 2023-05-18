@@ -1,3 +1,4 @@
+
 local alert = nil
 
 ---@class AlertDialogProps
@@ -12,40 +13,43 @@ local alert = nil
 ---@param data AlertDialogProps
 ---@return 'cancel' | 'confirm' | nil
 function lib.alertDialog(data)
-    if alert then return end
+	if alert then
+		return
+	end
 
-    alert = promise.new()
+	alert = promise.new()
 
-    lib.setNuiFocus(false)
-    SendNUIMessage({
-        action = 'sendAlert',
-        data = data
-    })
+	lib.setNuiFocus(false)
+	SendNUIMessage(
+		{
+		action = "sendAlert",
+		data = data
+	})
 
-    return Citizen.Await(alert)
+	return Citizen.Await(alert)
 end
 
 function lib.closeAlertDialog()
-    if not alert then return end
+	if not alert then
+		return
+	end
 
-    lib.resetNuiFocus()
-    SendNUIMessage({
-        action = 'closeAlertDialog'
-    })
+	lib.resetNuiFocus()
+	SendNUIMessage(
+		{
+		action = "closeAlertDialog"
+	})
 
-    alert:resolve(nil)
-    alert = nil
+	alert:resolve(nil)
+	alert = nil
 end
 
-
-RegisterNUICallback('closeAlert', function(data, cb)
-    cb(1)
-    lib.resetNuiFocus()
-
-    local promise = alert
-    alert = nil
-
-    promise:resolve(data)
+RegisterNUICallback("closeAlert", function(data, cb)
+	cb(1)
+	lib.resetNuiFocus()
+	local promise = alert
+	alert = nil
+	promise:resolve(data)
 end)
 
-RegisterNetEvent('ps_lib:alertDialog', lib.alertDialog)
+RegisterNetEvent("ps_lib:alertDialog", lib.alertDialog)

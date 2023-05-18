@@ -1,7 +1,7 @@
 Information:
 ps_lib is used for Platinum Scripts releases. ps_lib is a fork of ox_lib made by Overextended. This respository will remain public in accordance with the original license.
 
------------
+---
 
 <div align='center'><h1><a href='https://overextended.github.io/docs/'>Documentation</a></h3></div>
 <br>
@@ -24,4 +24,5 @@ add_ace resource.ps_lib command.remove_principal allow
 ```
 
 ## License
+
 <a href='https://www.gnu.org/licenses/lgpl-3.0.en.html'>LGPL-3.0-or-later</a>

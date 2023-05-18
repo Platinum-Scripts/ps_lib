@@ -3,29 +3,31 @@
 ---@param timeout number? Number of ticks to wait for the dictionary to load. Default is 500.
 ---@return string? textureDict
 function lib.requestStreamedTextureDict(textureDict, timeout)
-    if HasStreamedTextureDictLoaded(textureDict) then return textureDict end
+	if HasStreamedTextureDictLoaded(textureDict) then
+		return textureDict
+	end
 
-    if type(textureDict) ~= 'string' then
-        error(("expected textureDict to have type 'string' (received %s)"):format(type(textureDict)))
-    end
+	if type(textureDict) ~= "string" then
+		error(("expected textureDict to have type 'string' (received %s)"):format(type(textureDict)))
+	end
 
-    RequestStreamedTextureDict(textureDict, false)
+	RequestStreamedTextureDict(textureDict, false)
 
-    if coroutine.running() then
-        timeout = tonumber(timeout) or 500
+	if coroutine.running() then
+		timeout = tonumber(timeout) or 500
 
-        for _ = 1, timeout do
-            if HasStreamedTextureDictLoaded(textureDict) then
-                return textureDict
-            end
+		for _ = 1, timeout do
+			if HasStreamedTextureDictLoaded(textureDict) then
+				return textureDict
+			end
 
-            Wait(0)
-        end
+			Wait(0)
+		end
 
-        print(("failed to load textureDict '%s' after %s ticks"):format(textureDict, timeout))
-    end
+		print(("failed to load textureDict '%s' after %s ticks"):format(textureDict, timeout))
+	end
 
-    return textureDict
+	return textureDict
 end
 
 return lib.requestStreamedTextureDict

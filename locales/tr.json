@@ -1,9 +1,9 @@
 {
-  "language": "Türkçe",
-  "ui": {
-    "cancel": "İptal",
-    "close": "Kapat",
-    "confirm": "Onayla",
-    "more": "Daha Fazla..."
-  }
+	"language": "Türkçe",
+	"ui": {
+		"cancel": "İptal",
+		"close": "Kapat",
+		"confirm": "Onayla",
+		"more": "Daha Fazla..."
+	}
 }

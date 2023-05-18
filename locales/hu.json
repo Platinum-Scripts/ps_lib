@@ -1,9 +1,9 @@
 {
-  "language": "Magyar",
-  "ui": {
-    "cancel": "Mégse",
-    "close": "Bezárás",
-    "confirm": "Megerősít",
-    "more": "More..."
-  }
+	"language": "Magyar",
+	"ui": {
+		"cancel": "Mégse",
+		"close": "Bezárás",
+		"confirm": "Megerősít",
+		"more": "More..."
+	}
 }

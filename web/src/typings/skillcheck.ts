@@ -1,13 +1,13 @@
 interface CustomGameDifficulty {
-  areaSize: number;
-  speedMultiplier: number;
+	areaSize: number;
+	speedMultiplier: number;
 }
 
-export type GameDifficulty = 'easy' | 'medium' | 'hard' | CustomGameDifficulty;
+export type GameDifficulty = "easy" | "medium" | "hard" | CustomGameDifficulty;
 
 export interface SkillCheckProps {
-  angle: number;
-  difficultyOffset: number;
-  difficulty: GameDifficulty;
-  key: string;
+	angle: number;
+	difficultyOffset: number;
+	difficulty: GameDifficulty;
+	key: string;
 }

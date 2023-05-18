@@ -1,3 +1,4 @@
+
 lib.raycast = {}
 
 local StartShapeTestLosProbe = StartShapeTestLosProbe
@@ -22,15 +23,15 @@ local GetWorldCoordFromScreenCoord = GetWorldCoordFromScreenCoord
 function lib.raycast.cam(flags, ignore, distance)
 	local coords, normal = GetWorldCoordFromScreenCoord(0.5, 0.5)
 	local destination = coords + normal * (distance or 10)
-	local handle = StartShapeTestLosProbe(coords.x, coords.y, coords.z, destination.x, destination.y, destination.z,
-		flags or 511, cache.ped, ignore or 4)
+	local handle = StartShapeTestLosProbe(
+		coords.x, coords.y, coords.z, destination.x, destination.y, destination.z, flags or 511, cache.ped, ignore or 4)
 
 	while true do
 		Wait(0)
 		local retval, hit, endCoords, surfaceNormal, materialHash, entityHit = GetShapeTestResultIncludingMaterial(handle)
 
 		if retval ~= 1 then
-            ---@diagnostic disable-next-line: return-type-mismatch
+			---@diagnostic disable-next-line: return-type-mismatch
 			return hit, entityHit, endCoords, surfaceNormal, materialHash
 		end
 	end

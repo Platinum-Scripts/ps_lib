@@ -1,9 +1,9 @@
 {
-  "language": "Eesti",
-  "ui": {
-    "cancel": "Tühista",
-    "close": "Sulge",
-    "confirm": "Kinnita",
-    "more": "Rohkem..."
-  }
+	"language": "Eesti",
+	"ui": {
+		"cancel": "Tühista",
+		"close": "Sulge",
+		"confirm": "Kinnita",
+		"more": "Rohkem..."
+	}
 }

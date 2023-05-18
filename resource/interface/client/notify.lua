@@ -14,10 +14,11 @@
 
 ---@param data NotifyProps
 function lib.notify(data)
-    SendNUIMessage({
-        action = 'notify',
-        data = data
-    })
+	SendNUIMessage(
+		{
+		action = "notify",
+		data = data
+	})
 end
 
 ---@class DefaultNotifyProps
@@ -30,11 +31,13 @@ end
 
 ---@param data DefaultNotifyProps
 function lib.defaultNotify(data)
-    -- Backwards compat for v3 
-    data.type = data.status
-    if data.type == 'inform' then data.type = 'info' end
-    return lib.notify(data)
+	-- Backwards compat for v3
+	data.type = data.status
+	if data.type == "inform" then
+		data.type = "info"
+	end
+	return lib.notify(data)
 end
 
-RegisterNetEvent('ps_lib:notify', lib.notify)
-RegisterNetEvent('ps_lib:defaultNotify', lib.defaultNotify)
+RegisterNetEvent("ps_lib:notify", lib.notify)
+RegisterNetEvent("ps_lib:defaultNotify", lib.defaultNotify)

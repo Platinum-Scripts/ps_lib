@@ -1,5 +1,5 @@
-import * as lib from './resource';
+import * as lib from "./resource";
 
-export * from './resource';
-export * from '../shared';
+export * from "./resource";
+export * from "../shared";
 export default lib;

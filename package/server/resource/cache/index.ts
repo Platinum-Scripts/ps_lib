@@ -1,3 +1,3 @@
-import { cache, onCache } from '../../../shared';
+import { cache, onCache } from "../../../shared";
 
 export { cache, onCache };

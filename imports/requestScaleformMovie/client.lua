@@ -3,29 +3,31 @@
 ---@param timeout number? Number of ticks to wait for the scaleform movie to load. Default is 500.
 ---@return number? scaleform
 function lib.requestScaleformMovie(scaleformName, timeout)
-    if type(scaleformName) ~= 'string' then
-        error(("expected scaleformName to have type 'string' (received %s)"):format(type(scaleformName)))
-    end
+	if type(scaleformName) ~= "string" then
+		error(("expected scaleformName to have type 'string' (received %s)"):format(type(scaleformName)))
+	end
 
-    local scaleform = RequestScaleformMovie(scaleformName)
+	local scaleform = RequestScaleformMovie(scaleformName)
 
-    if HasScaleformMovieLoaded(scaleform) then return scaleform end
+	if HasScaleformMovieLoaded(scaleform) then
+		return scaleform
+	end
 
-    if coroutine.running() then
-        timeout = tonumber(timeout) or 500
+	if coroutine.running() then
+		timeout = tonumber(timeout) or 500
 
-        for _ = 1, timeout do
-            if HasScaleformMovieLoaded(scaleform) then
-                return scaleform
-            end
+		for _ = 1, timeout do
+			if HasScaleformMovieLoaded(scaleform) then
+				return scaleform
+			end
 
-            Wait(0)
-        end
+			Wait(0)
+		end
 
-        print(("failed to load scaleformName '%s' after %s ticks"):format(scaleformName, timeout))
-    end
+		print(("failed to load scaleformName '%s' after %s ticks"):format(scaleformName, timeout))
+	end
 
-    return scaleform
+	return scaleform
 end
 
 return lib.requestScaleformMovie

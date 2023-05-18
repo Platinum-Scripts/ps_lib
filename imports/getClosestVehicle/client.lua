@@ -4,16 +4,16 @@
 ---@return number? vehicle
 ---@return vector3? vehicleCoords
 function lib.getClosestVehicle(coords, maxDistance, includePlayerVehicle)
-	local vehicles = GetGamePool('CVehicle')
+	local vehicles = GetGamePool("CVehicle")
 	local closestVehicle, closestCoords
 	maxDistance = maxDistance or 2.0
 
-	for i = 1, #vehicles do
+	for i = 1, # vehicles do
 		local vehicle = vehicles[i]
 
 		if not cache.vehicle or vehicle ~= cache.vehicle or includePlayerVehicle then
 			local vehicleCoords = GetEntityCoords(vehicle)
-			local distance = #(coords - vehicleCoords)
+			local distance = # (coords - vehicleCoords)
 
 			if distance < maxDistance then
 				maxDistance = distance
