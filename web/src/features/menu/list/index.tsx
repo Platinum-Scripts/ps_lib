@@ -1,235 +1,147 @@
-import { Box, createStyles, Stack, Tooltip } from "@mantine/core";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useNuiEvent } from "../../../hooks/useNuiEvent";
-import ListItem from "./ListItem";
-import Header from "./Header";
-import FocusTrap from "focus-trap-react";
-import { fetchNui } from "../../../utils/fetchNui";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import type { MenuPosition, MenuSettings } from "../../../typings";
-import { ListMenuContext } from "../../../App";
+import { Box, createStyles, Stack, Tooltip } from '@mantine/core';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useNuiEvent } from '../../../hooks/useNuiEvent';
+import ListItem from './ListItem';
+import Header from './Header';
+import FocusTrap from 'focus-trap-react';
+import { fetchNui } from '../../../utils/fetchNui';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import type { MenuPosition, MenuSettings } from '../../../typings';
+import { ListMenuContext } from '../../../App';
 
-const useStyles = createStyles(
-	(
-		theme,
-		params: { position?: MenuPosition; itemCount: number; selected: number }
-	) => ({
-		tooltip: {
-			backgroundColor: theme.colors.lighter[1],
-			color: theme.colors.lighter[0],
-			borderRadius: theme.radius.sm,
-			maxWidth: 350,
-			whiteSpace: "normal",
-		},
-		container: {
-			position: "absolute",
-			pointerEvents: "none",
-			marginTop:
-				params.position === "top-left" ||
-				params.position === "top-right"
-					? 5
-					: 0,
-			marginLeft:
-				params.position === "top-left" ||
-				params.position === "bottom-left"
-					? 5
-					: 0,
-			marginRight:
-				params.position === "top-right" ||
-				params.position === "bottom-right"
-					? 5
-					: 0,
-			marginBottom:
-				params.position === "bottom-left" ||
-				params.position === "bottom-right"
-					? 5
-					: 0,
-			right:
-				params.position === "top-right" ||
-				params.position === "bottom-right"
-					? 1
-					: undefined,
-			left: params.position === "bottom-left" ? 1 : undefined,
-			bottom:
-				params.position === "bottom-left" ||
-				params.position === "bottom-right"
-					? 1
-					: undefined,
-			fontFamily: "Roboto",
-		},
-		buttonsWrapper: {
-			height: "fit-content",
-			maxHeight: 415,
-			overflow: "hidden",
-			borderRadius:
-				params.itemCount <= 6 ||
-				params.selected === params.itemCount - 1
-					? theme.radius.md
-					: undefined,
-			backgroundColor: theme.colors.lighter[2],
-			borderTopLeftRadius: 0,
-			borderTopRightRadius: 0,
-		},
-		scrollArrow: {
-			backgroundColor: theme.colors.lighter[2],
-			textAlign: "center",
-			borderBottomLeftRadius: theme.radius.md,
-			borderBottomRightRadius: theme.radius.md,
-			height: 25,
-		},
-		scrollArrowIcon: {
-			color: theme.colors.lighter[0],
-			fontSize: 20,
-		},
-	})
-);
+const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCount: number; selected: number }) => ({
+	tooltip: {
+		backgroundColor: theme.colors.lighter[1],
+		color: theme.colors.lighter[0],
+		borderRadius: theme.radius.sm,
+		maxWidth: 350,
+		whiteSpace: 'normal',
+	},
+	container: {
+		position: 'absolute',
+		pointerEvents: 'none',
+		marginTop: params.position === 'top-left' || params.position === 'top-right' ? 5 : 0,
+		marginLeft: params.position === 'top-left' || params.position === 'bottom-left' ? 5 : 0,
+		marginRight: params.position === 'top-right' || params.position === 'bottom-right' ? 5 : 0,
+		marginBottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 5 : 0,
+		right: params.position === 'top-right' || params.position === 'bottom-right' ? 1 : undefined,
+		left: params.position === 'bottom-left' ? 1 : undefined,
+		bottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 1 : undefined,
+		fontFamily: 'Roboto',
+	},
+	buttonsWrapper: {
+		height: 'fit-content',
+		maxHeight: 415,
+		overflow: 'hidden',
+		borderRadius: params.itemCount <= 6 || params.selected === params.itemCount - 1 ? theme.radius.md : undefined,
+		backgroundColor: theme.colors.lighter[2],
+		borderTopLeftRadius: 0,
+		borderTopRightRadius: 0,
+	},
+	scrollArrow: {
+		backgroundColor: theme.colors.lighter[2],
+		textAlign: 'center',
+		borderBottomLeftRadius: theme.radius.md,
+		borderBottomRightRadius: theme.radius.md,
+		height: 25,
+	},
+	scrollArrowIcon: {
+		color: theme.colors.lighter[0],
+		fontSize: 20,
+	},
+}));
 
 const ListMenu: React.FC = () => {
 	const [menu, setMenu] = useState<MenuSettings>({
-		position: "top-left",
-		title: "",
+		position: 'top-left',
+		title: '',
 		items: [],
 	});
 	const [selected, setSelected] = useState(0);
 	const [visible, setVisible] = useState(false);
 	const [indexStates, setIndexStates] = useState<Record<number, number>>({});
-	const [checkedStates, setCheckedStates] = useState<Record<number, boolean>>(
-		{}
-	);
+	const [checkedStates, setCheckedStates] = useState<Record<number, boolean>>({});
 	const listRefs = useRef<Array<HTMLDivElement | null>>([]);
 	const firstRenderRef = useRef(false);
-	const { classes } = useStyles({
-		position: menu.position,
-		itemCount: menu.items.length,
-		selected,
-	});
+	const { classes } = useStyles({ position: menu.position, itemCount: menu.items.length, selected });
 
 	const listMenuContext = useContext(ListMenuContext);
 
 	const isListMenuOpen = listMenuContext?.isListMenuOpen || false;
 	const setListMenuOpen = listMenuContext?.setListMenuOpen;
-	const listMenuPosition = listMenuContext?.listMenuPosition || "top-left";
+	const listMenuPosition = listMenuContext?.listMenuPosition || 'top-left';
 	const setListMenuPosition = listMenuContext?.setListMenuPosition;
 
-	const closeMenu = (
-		ignoreFetch?: boolean,
-		keyPressed?: string,
-		forceClose?: boolean
-	) => {
+	const closeMenu = (ignoreFetch?: boolean, keyPressed?: string, forceClose?: boolean) => {
 		if (menu.canClose === false && !forceClose) return;
 		setVisible(false);
-		if (!ignoreFetch) fetchNui("closeMenu", keyPressed);
+		if (!ignoreFetch) fetchNui('closeMenu', keyPressed);
 	};
 
 	const moveMenu = (e: React.KeyboardEvent<HTMLDivElement>) => {
 		if (firstRenderRef.current) firstRenderRef.current = false;
 		switch (e.code) {
-			case "ArrowDown":
-				fetchNui("PLAY_SOUND_FRONTEND", {
-					audioName: "NAV_UP_DOWN",
-					audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET",
-				}).catch((err) => console.log(err));
+			case 'ArrowDown':
+				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch(err => console.log(err));
 				setSelected((selected) => {
-					if (selected >= menu.items.length - 1)
-						return (selected = 0);
+					if (selected >= menu.items.length - 1) return (selected = 0);
 					return selected + 1;
 				});
 				break;
-			case "ArrowUp":
-				fetchNui("PLAY_SOUND_FRONTEND", {
-					audioName: "NAV_UP_DOWN",
-					audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET",
-				}).catch();
+			case 'ArrowUp':
+				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 				setSelected((selected) => {
-					if (selected <= 0)
-						return (selected = menu.items.length - 1);
+					if (selected <= 0) return (selected = menu.items.length - 1);
 					return selected - 1;
 				});
 				break;
-			case "ArrowRight":
+			case 'ArrowRight':
 				if (Array.isArray(menu.items[selected].values))
-					fetchNui("PLAY_SOUND_FRONTEND", {
-						audioName: "NAV_LEFT_RIGHT",
-						audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET",
-					}).catch();
+					fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 				setIndexStates({
 					...indexStates,
 					[selected]:
-						indexStates[selected] + 1 <=
-						menu.items[selected].values?.length! - 1
-							? indexStates[selected] + 1
-							: 0,
+						indexStates[selected] + 1 <= menu.items[selected].values?.length! - 1 ? indexStates[selected] + 1 : 0,
 				});
 				break;
-			case "ArrowLeft":
+			case 'ArrowLeft':
 				if (Array.isArray(menu.items[selected].values))
-					fetchNui("PLAY_SOUND_FRONTEND", {
-						audioName: "NAV_LEFT_RIGHT",
-						audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET",
-					}).catch();
+					fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 				setIndexStates({
 					...indexStates,
 					[selected]:
-						indexStates[selected] - 1 >= 0
-							? indexStates[selected] - 1
-							: menu.items[selected].values?.length! - 1,
+						indexStates[selected] - 1 >= 0 ? indexStates[selected] - 1 : menu.items[selected].values?.length! - 1,
 				});
 
 				break;
-			case "Enter":
+			case 'Enter':
 				if (!menu.items[selected]) return;
 
 				if (menu.items[selected]?.disabled) {
-					fetchNui("PLAY_SOUND_FRONTEND", {
-						audioName: "ERROR",
-						audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET",
-					}).catch();
+					fetchNui("PLAY_SOUND_FRONTEND", { audioName: "ERROR", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 					return;
 				}
 
-				if (
-					menu.items[selected].checked !== undefined &&
-					!menu.items[selected].values
-				) {
-					fetchNui("PLAY_SOUND_FRONTEND", {
-						audioName: "TOGGLE_ON",
-						audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET",
-					}).catch();
+				if (menu.items[selected].checked !== undefined && !menu.items[selected].values) {
+					fetchNui("PLAY_SOUND_FRONTEND", { audioName: "TOGGLE_ON", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 					return setCheckedStates({
 						...checkedStates,
 						[selected]: !checkedStates[selected],
 					});
 				}
 
-				fetchNui("PLAY_SOUND_FRONTEND", {
-					audioName: "SELECT",
-					audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET",
-				}).catch();
-				fetchNui("confirmSelected", [
-					selected,
-					indexStates[selected],
-				]).catch();
-				if (
-					menu.items[selected].close === undefined ||
-					menu.items[selected].close
-				)
-					setVisible(false);
+				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "SELECT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
+				fetchNui('confirmSelected', [selected, indexStates[selected]]).catch();
+				if (menu.items[selected].close === undefined || menu.items[selected].close) setVisible(false);
 				break;
 		}
 	};
 
 	useEffect(() => {
-		if (
-			menu.items[selected]?.checked === undefined ||
-			firstRenderRef.current
-		)
-			return;
+		if (menu.items[selected]?.checked === undefined || firstRenderRef.current) return;
 		const timer = setTimeout(() => {
-			fetchNui("changeChecked", [
-				selected,
-				checkedStates[selected],
-			]).catch();
+			fetchNui('changeChecked', [selected, checkedStates[selected]]).catch();
 		}, 100);
 		return () => clearTimeout(timer);
 	}, [checkedStates]);
@@ -237,7 +149,7 @@ const ListMenu: React.FC = () => {
 	useEffect(() => {
 		if (!menu.items[selected]?.values || firstRenderRef.current) return;
 		const timer = setTimeout(() => {
-			fetchNui("changeIndex", [selected, indexStates[selected]]).catch();
+			fetchNui('changeIndex', [selected, indexStates[selected]]).catch();
 		}, 100);
 		return () => clearTimeout(timer);
 	}, [indexStates]);
@@ -246,25 +158,21 @@ const ListMenu: React.FC = () => {
 		if (!menu.items[selected]) return;
 		if (listRefs && listRefs.current && listRefs.current[selected]) {
 			listRefs.current[selected]?.scrollIntoView({
-				block: "nearest",
-				inline: "start",
+				block: 'nearest',
+				inline: 'start',
 			});
 			listRefs.current[selected]?.focus({ preventScroll: true });
 		}
 		// debounces the callback to avoid spam
 		const timer = setTimeout(() => {
-			fetchNui("changeSelected", [
+			fetchNui('changeSelected', [
 				selected,
 				menu.items[selected].values
 					? indexStates[selected]
 					: menu.items[selected].checked
-					? checkedStates[selected]
-					: null,
-				menu.items[selected].values
-					? "isScroll"
-					: menu.items[selected].checked
-					? "isCheck"
-					: null,
+						? checkedStates[selected]
+						: null,
+				menu.items[selected].values ? 'isScroll' : menu.items[selected].checked ? 'isCheck' : null,
 			]).catch();
 		}, 100);
 		return () => clearTimeout(timer);
@@ -274,35 +182,29 @@ const ListMenu: React.FC = () => {
 		if (!visible) return;
 
 		const keyHandler = (e: KeyboardEvent) => {
-			if (["Escape", "Backspace"].includes(e.code))
-				closeMenu(false, e.code);
+			if (['Escape', 'Backspace'].includes(e.code)) closeMenu(false, e.code);
 		};
 
-		window.addEventListener("keydown", keyHandler);
+		window.addEventListener('keydown', keyHandler);
 
-		return () => window.removeEventListener("keydown", keyHandler);
+		return () => window.removeEventListener('keydown', keyHandler);
 	}, [visible]);
 
 	const isValuesObject = useCallback(
 		(values?: Array<string | { label: string; description: string }>) => {
-			return (
-				Array.isArray(values) &&
-				typeof values[indexStates[selected]] === "object"
-			);
+			return Array.isArray(values) && typeof values[indexStates[selected]] === 'object';
 		},
 		[indexStates, selected]
 	);
 
-	useNuiEvent("closeMenu", () => closeMenu(true, undefined, true));
+	useNuiEvent('closeMenu', () => closeMenu(true, undefined, true));
 
-	useNuiEvent("setMenu", (data: MenuSettings) => {
+	useNuiEvent('setMenu', (data: MenuSettings) => {
 		firstRenderRef.current = true;
-		if (!data.startItemIndex || data.startItemIndex < 0)
-			data.startItemIndex = 0;
-		else if (data.startItemIndex >= data.items.length)
-			data.startItemIndex = data.items.length - 1;
+		if (!data.startItemIndex || data.startItemIndex < 0) data.startItemIndex = 0;
+		else if (data.startItemIndex >= data.items.length) data.startItemIndex = data.items.length - 1;
 		setSelected(data.startItemIndex);
-		if (!data.position) data.position = "top-left";
+		if (!data.position) data.position = 'top-left';
 		if (setListMenuPosition !== undefined) {
 			setListMenuPosition(data.position);
 		}
@@ -313,10 +215,8 @@ const ListMenu: React.FC = () => {
 		const arrayIndexes: { [key: number]: number } = {};
 		const checkedIndexes: { [key: number]: boolean } = {};
 		for (let i = 0; i < data.items.length; i++) {
-			if (Array.isArray(data.items[i].values))
-				arrayIndexes[i] = (data.items[i].defaultIndex || 1) - 1;
-			else if (data.items[i].checked !== undefined)
-				checkedIndexes[i] = data.items[i].checked || false;
+			if (Array.isArray(data.items[i].values)) arrayIndexes[i] = (data.items[i].defaultIndex || 1) - 1;
+			else if (data.items[i].checked !== undefined) checkedIndexes[i] = data.items[i].checked || false;
 		}
 		setIndexStates(arrayIndexes);
 		setCheckedStates(checkedIndexes);
@@ -335,27 +235,13 @@ const ListMenu: React.FC = () => {
 					label={
 						isValuesObject(menu.items[selected].values)
 							? // @ts-ignore
-							  `${
-									menu.items[selected].disabled
-										? "[DISABLED] "
-										: ""
-							  }${
-									menu.items[selected].values[
-										indexStates[selected]
-									].description
-							  }`
-							: `${
-									menu.items[selected].disabled
-										? "[DISABLED] "
-										: ""
-							  }${menu.items[selected].description}`
+							`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`
+							: `${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`
 					}
 					opened={
 						isValuesObject(menu.items[selected].values)
 							? // @ts-ignore
-							  !!menu.items[selected].values[
-									indexStates[selected]
-							  ].description
+							!!menu.items[selected].values[indexStates[selected]].description
 							: !!menu.items[selected].description
 					}
 					transitionDuration={0}
@@ -363,37 +249,18 @@ const ListMenu: React.FC = () => {
 				>
 					<Box className={classes.container}>
 						<Header title={menu.title} />
-						<Box
-							className={classes.buttonsWrapper}
-							onKeyDown={(
-								e: React.KeyboardEvent<HTMLDivElement>
-							) => moveMenu(e)}
-						>
+						<Box className={classes.buttonsWrapper} onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)}>
 							<FocusTrap active={visible}>
-								<Stack
-									spacing={8}
-									p={8}
-									sx={{ overflowY: "scroll" }}
-								>
+								<Stack spacing={8} p={8} sx={{ overflowY: 'scroll' }}>
 									{menu.items.map((item, index) => (
-										<React.Fragment
-											key={`menu-item-${index}`}
-										>
+										<React.Fragment key={`menu-item-${index}`}>
 											{item.label && (
 												<ListItem
 													index={index}
 													item={item}
-													scrollIndex={
-														indexStates[index]
-													}
-													checked={
-														checkedStates[index]
-													}
-													ref={(el) =>
-														(listRefs.current[
-															index
-														] = el)
-													}
+													scrollIndex={indexStates[index]}
+													checked={checkedStates[index]}
+													ref={(el) => (listRefs.current[index] = el)}
 												/>
 											)}
 										</React.Fragment>
@@ -401,14 +268,11 @@ const ListMenu: React.FC = () => {
 								</Stack>
 							</FocusTrap>
 						</Box>
-						{menu.items.length > 6 &&
-							selected !== menu.items.length - 1 && (
-								<Box className={classes.scrollArrow}>
-									<i
-										className={`fa-solid fa-chevron-down`}
-									></i>
-								</Box>
-							)}
+						{menu.items.length > 6 && selected !== menu.items.length - 1 && (
+							<Box className={classes.scrollArrow}>
+								<i className={`fa-solid fa-chevron-down`}></i>
+							</Box>
+						)}
 					</Box>
 				</Tooltip>
 			)}

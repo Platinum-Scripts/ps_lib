@@ -192,22 +192,20 @@ const Notifications: React.FC = () => {
 				<Box
 					sx={{
 						animation: t.visible
-							? `${
-									position?.includes("bottom")
-										? enterAnimationBottom
-										: enterAnimationTop
-							  } 0.2s ease-out forwards`
-							: `${
-									position?.includes("right")
-										? exitAnimationRight
-										: position?.includes("left")
-										? exitAnimationLeft
-										: position === "top-center"
+							? `${position?.includes("bottom")
+								? enterAnimationBottom
+								: enterAnimationTop
+							} 0.2s ease-out forwards`
+							: `${position?.includes("right")
+								? exitAnimationRight
+								: position?.includes("left")
+									? exitAnimationLeft
+									: position === "top-center"
 										? exitAnimationTop
 										: position
-										? exitAnimationBottom
-										: exitAnimationRight
-							  } 0.4s ease-in forwards`,
+											? exitAnimationBottom
+											: exitAnimationRight
+							} 0.4s ease-in forwards`,
 					}}
 					style={data.style}
 					className={`${classes.container}`}
@@ -221,10 +219,10 @@ const Notifications: React.FC = () => {
 											data.type === "error"
 												? "red"
 												: data.type === "success"
-												? "teal"
-												: data.type === "warning"
-												? "yellow"
-												: "blue"
+													? "teal"
+													: data.type === "warning"
+														? "yellow"
+														: "blue"
 										}
 										radius="xl"
 										size={32}
