@@ -92,6 +92,10 @@ const useStyles = createStyles(
 			minWidth: 0,  // This will prevent the text from pushing other items out
 			overflow: 'hidden',  // This will prevent the text from spilling over outside the container
 		},
+		"50": {
+			// 50% opacity
+			opacity: 0.5,
+		}
 	})
 );
 
@@ -103,6 +107,28 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 		});
 
 		const icon = item.disabled ? "fa-lock" : item.icon;
+
+		function convertTitle(text) {
+			text = titleCase(text);
+			// if the text has <50>(.*)</50> then we need to convert it to wrap that part in a span with 50% opacity
+			const regex = /<50>(.*)<\/50>/g;
+			const match = regex.exec(text);
+			if (match) {
+
+				// first part of text is just {text} then we can <span> the second part, then if there is any remaining text we can just add it to the end, we can do this recursively
+				const firstPart = text.substring(0, match.index);
+				const secondPart = text.substring(match.index + match[0].length);
+				return (
+					<>
+						{firstPart}
+						<span className={classes["50"]}>{match[1]}</span>
+						{secondPart && convertTitle(secondPart)}
+					</>
+				);
+			} else {
+				return text;
+			}
+		}
 
 		return (
 			<Box
@@ -133,7 +159,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 						<Group position="apart" w="100%">
 							<Stack spacing={0} justify="space-between" className={classes.textContainer}>
 								<Text className={`${classes.label}`} style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-									{titleCase(item.label)}
+									{convertTitle(item.label)}
 								</Text>
 								<Textfit min ={12} max = {16}>
 									{typeof item.values[scrollIndex] === "object"
@@ -179,7 +205,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 							></i>
 						</Group>
 					) : (
-						<Text>{titleCase(item.label)}</Text>
+						<Text>{convertTitle(item.label)}</Text>
 					)}
 				</Group>
 			</Box>

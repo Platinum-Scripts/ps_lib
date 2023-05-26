@@ -1,4 +1,4 @@
-import { Box, createStyles, Stack, Tooltip } from '@mantine/core';
+import { Box, createStyles, Stack, Tooltip, Text } from '@mantine/core';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useNuiEvent } from '../../../hooks/useNuiEvent';
 import ListItem from './ListItem';
@@ -21,35 +21,48 @@ const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCo
 	container: {
 		position: 'absolute',
 		pointerEvents: 'none',
-		marginTop: params.position === 'top-left' || params.position === 'top-right' ? 5 : 0,
-		marginLeft: params.position === 'top-left' || params.position === 'bottom-left' ? 5 : 0,
-		marginRight: params.position === 'top-right' || params.position === 'bottom-right' ? 5 : 0,
-		marginBottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 5 : 0,
+		marginTop: params.position === 'top-left' || params.position === 'top-right' ? 8 : 2,
+		marginLeft: params.position === 'top-left' || params.position === 'bottom-left' ? 8 : 2,
+		marginRight: params.position === 'top-right' || params.position === 'bottom-right' ? 8 : 2,
+		marginBottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 8 : 2,
 		right: params.position === 'top-right' || params.position === 'bottom-right' ? 1 : undefined,
 		left: params.position === 'bottom-left' ? 1 : undefined,
 		bottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 1 : undefined,
 		fontFamily: 'Roboto',
 	},
+	wrapTheWrap: {
+		borderRadius: theme.radius.md,
+		backgroundColor: theme.colors.lighter[2],
+		borderTopLeftRadius: theme.radius.md,
+		borderTopRightRadius: theme.radius.md,
+		borderBottomLeftRadius: theme.radius.md,
+		borderBottomRightRadius: theme.radius.md,
+	},
 	buttonsWrapper: {
 		height: 'fit-content',
 		maxHeight: 415,
 		overflow: 'hidden',
-		borderRadius: params.itemCount <= 6 || params.selected === params.itemCount - 1 ? theme.radius.md : undefined,
-		backgroundColor: theme.colors.lighter[2],
-		borderTopLeftRadius: 0,
-		borderTopRightRadius: 0,
 	},
 	scrollArrow: {
 		backgroundColor: theme.colors.lighter[2],
 		textAlign: 'center',
+		height: 25,
 		borderBottomLeftRadius: theme.radius.md,
 		borderBottomRightRadius: theme.radius.md,
-		height: 25,
+		paddingTop: "0.475em",
+		paddingBottom: "0.75em",
 	},
 	scrollArrowIcon: {
 		color: theme.colors.lighter[0],
 		fontSize: 20,
 	},
+	bottomBoxes: {
+		width: "auto",
+		backgroundColor: theme.colors.lighter[1],
+		color: theme.colors.lighter[0],
+		borderRadius: theme.radius.sm,
+		fontWeight: 900
+	}
 }));
 
 const ListMenu: React.FC = () => {
@@ -247,7 +260,7 @@ const ListMenu: React.FC = () => {
 					transitionDuration={0}
 					classNames={{ tooltip: classes.tooltip }}
 				>
-					<Box className={classes.container}>
+					<Box className={`${classes.container} ${classes.wrapTheWrap}`}>
 						<Header title={menu.title} />
 						<Box className={classes.buttonsWrapper} onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)}>
 							<FocusTrap active={visible}>
@@ -268,11 +281,21 @@ const ListMenu: React.FC = () => {
 								</Stack>
 							</FocusTrap>
 						</Box>
-						{menu.items.length > 6 && selected !== menu.items.length - 1 && (
-							<Box className={classes.scrollArrow}>
-								<i className={`fa-solid fa-chevron-down`}></i>
+
+						<Box className={classes.scrollArrow} style={{ display: 'flex', alignItems: 'center' }}>
+							<div style={{ flex: 1 }}></div>
+							<Text style={{ textAlign: 'center', flex: 1, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+								{menu.items.length > 6 && selected !== menu.items.length - 1 && (
+									<i className={`fa-solid fa-chevron-down`}></i>
+								)}
+							</Text>
+							<Box style={{ flex: 1, paddingRight: '1em', textAlign: 'right' }}>
+								<span className={`${classes.bottomBoxes}`} style={{ padding: "0.2em" }}>
+									<i className={`fa-solid fa-sort`} style={{ paddingRight: "0.15em" }}></i>
+									{selected + 1}/{menu.items.length}
+								</span>
 							</Box>
-						)}
+						</Box>
 					</Box>
 				</Tooltip>
 			)}
