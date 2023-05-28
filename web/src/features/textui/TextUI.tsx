@@ -1,11 +1,12 @@
 import React from "react";
 import { useNuiEvent } from "../../hooks/useNuiEvent";
-import { Box, createStyles, Group } from "@mantine/core";
+import { Box, createStyles, Group, Text } from "@mantine/core";
 import ReactMarkdown from "react-markdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ScaleFade from "../../transitions/ScaleFade";
 import remarkGfm from "remark-gfm";
 import type { TextUiProps, TextUiPosition } from "../../typings";
+import { ColorText } from "../menu/list";
 
 const useStyles = createStyles(
 	(theme, params: { position?: TextUiPosition }) => ({
@@ -20,8 +21,8 @@ const useStyles = createStyles(
 				params.position === "right-center"
 					? "flex-end"
 					: params.position === "left-center"
-					? "flex-start"
-					: "center",
+						? "flex-start"
+						: "center",
 		},
 		container: {
 			fontSize: 16,
@@ -60,13 +61,15 @@ const TextUI: React.FC = () => {
 						<Group spacing={12}>
 							{data.icon && (
 								<i
-									className={`fa-solid fa-fw fw-lg findme ${data.icon}`}
+									className={`fa-solid fa-fw fw-lg findme fa-${data.icon}`}
 									style={{ color: data.iconColor }}
 								/>
 							)}
-							<ReactMarkdown remarkPlugins={[remarkGfm]}>
-								{data.text}
-							</ReactMarkdown>
+							{data.text && (
+								<Box>
+									<Text>{ColorText(data.text)}</Text>
+								</Box>
+							)}
 						</Group>
 					</Box>
 				</ScaleFade>

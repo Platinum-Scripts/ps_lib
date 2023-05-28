@@ -2,6 +2,7 @@ import { Box, createStyles, Text } from "@mantine/core";
 import React from "react";
 import { titleCase } from "title-case";
 import Textfit from '@namhong2001/react-textfit';
+import { ColorText } from ".";
 
 const useStyles = createStyles((theme) => ({
 	container: {
@@ -30,7 +31,7 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
 	return (
 		<Box className={classes.container}>
 			<Textfit min={18} max = {28} className={classes.heading}>
-				{titleCase(title)}
+				{ColorText(titleCase(title))}
 			</Textfit>
 		</Box>
 	);

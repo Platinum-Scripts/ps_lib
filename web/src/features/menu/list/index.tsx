@@ -10,64 +10,177 @@ import React from 'react';
 import type { MenuPosition, MenuSettings } from '../../../typings';
 import { ListMenuContext } from '../../../App';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
+import { theme } from '../../../theme';
 
-const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCount: number; selected: number }) => ({
-	tooltip: {
-		backgroundColor: theme.colors.lighter[1],
-		color: theme.colors.lighter[0],
-		borderRadius: theme.radius.sm,
-		maxWidth: 350,
-		whiteSpace: 'normal',
-	},
-	container: {
-		position: 'absolute',
-		pointerEvents: 'none',
-		marginTop: params.position === 'top-left' || params.position === 'top-right' ? 8 : 2,
-		marginLeft: params.position === 'top-left' || params.position === 'bottom-left' ? 8 : 2,
-		marginRight: params.position === 'top-right' || params.position === 'bottom-right' ? 8 : 2,
-		marginBottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 8 : 2,
-		right: params.position === 'top-right' || params.position === 'bottom-right' ? 1 : undefined,
-		left: params.position === 'bottom-left' ? 1 : undefined,
-		bottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 1 : undefined,
-		fontFamily: 'Roboto',
-	},
-	wrapTheWrap: {
-		borderRadius: theme.radius.md,
-		backgroundColor: theme.colors.lighter[2],
-		borderTopLeftRadius: theme.radius.md,
-		borderTopRightRadius: theme.radius.md,
-		borderBottomLeftRadius: theme.radius.md,
-		borderBottomRightRadius: theme.radius.md,
-	},
-	buttonsWrapper: {
-		height: 'fit-content',
-		maxHeight: 415,
-		overflow: 'hidden',
-	},
-	scrollArrow: {
-		backgroundColor: theme.colors.lighter[2],
-		textAlign: 'center',
-		height: 25,
-		borderBottomLeftRadius: theme.radius.md,
-		borderBottomRightRadius: theme.radius.md,
-		paddingTop: "0.475em",
-		paddingBottom: "0.75em",
-	},
-	scrollArrowIcon: {
-		color: theme.colors.lighter[0],
-		fontSize: 20,
-	},
-	bottomBoxes: {
-		width: "auto",
-		backgroundColor: theme.colors.lighter[1],
-		color: theme.colors.lighter[0],
-		borderRadius: theme.radius.sm,
-		fontWeight: 900
-	},
-	"50": {
-		opacity: 0.5,
+let white: string;
+
+const useStyles = createStyles(
+	(
+		theme, params: { position?: MenuPosition; itemCount: number; selected: number }
+	) => (
+		{
+			tooltip: {
+				backgroundColor: theme.colors.lighter[1],
+				color: theme.colors.lighter[0],
+				borderRadius: theme.radius.sm,
+				maxWidth: 350,
+				whiteSpace: 'normal',
+			},
+			container: {
+				position: 'absolute',
+				pointerEvents: 'none',
+				marginTop: params.position === 'top-left' || params.position === 'top-right' ? 8 : 2,
+				marginLeft: params.position === 'top-left' || params.position === 'bottom-left' ? 8 : 2,
+				marginRight: params.position === 'top-right' || params.position === 'bottom-right' ? 8 : 2,
+				marginBottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 8 : 2,
+				right: params.position === 'top-right' || params.position === 'bottom-right' ? 1 : undefined,
+				left: params.position === 'bottom-left' ? 1 : undefined,
+				bottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 1 : undefined,
+				fontFamily: 'Roboto',
+			},
+			wrapTheWrap: {
+				borderRadius: theme.radius.md,
+				backgroundColor: theme.colors.lighter[2],
+				borderTopLeftRadius: theme.radius.md,
+				borderTopRightRadius: theme.radius.md,
+				borderBottomLeftRadius: theme.radius.md,
+				borderBottomRightRadius: theme.radius.md,
+			},
+			buttonsWrapper: {
+				height: 'fit-content',
+				maxHeight: 415,
+				overflow: 'hidden',
+			},
+			scrollArrow: {
+				backgroundColor: theme.colors.lighter[2],
+				textAlign: 'center',
+				height: 25,
+				borderBottomLeftRadius: theme.radius.md,
+				borderBottomRightRadius: theme.radius.md,
+				paddingTop: "0.475em",
+				paddingBottom: "0.75em",
+			},
+			scrollArrowIcon: {
+				color: theme.colors.lighter[0],
+				fontSize: 20,
+			},
+			bottomBoxes: {
+				width: "auto",
+				backgroundColor: theme.colors.lighter[1],
+				color: theme.colors.lighter[0],
+				borderRadius: theme.radius.sm,
+				fontWeight: 900
+			},
+			"50": {
+				opacity: 0.5,
+			}
+		}
+	)
+);
+
+function ColorText(text: string) {
+	if (theme && theme.colors && theme.colors.lighter && theme.colors.lighter[0]) {
+		white = theme.colors.lighter[0];
 	}
-}));
+
+	const colorMap: { [key: string]: string } = {
+		'r': 'rgba(224, 50, 50, 1)',
+		'g': 'rgba(114, 204, 114, 1)',
+		'b': 'rgba(93, 182, 229, 1)',
+		'f': 'rgba(93, 182, 229, 1)',
+		'y': 'rgba(240, 200, 80, 1)',
+		'c': 'rgba(140, 140, 140, 1)',
+		't': 'rgba(140, 140, 140, 1)',
+		'o': 'rgba(255, 133, 85, 1)',
+		'p': 'rgba(132, 102, 226, 1)',
+		'q': 'rgba(203, 54, 148, 1)',
+		'm': 'rgba(100, 100, 100, 1)',
+		'l': 'rgba(0, 0, 0, 1)',
+		'd': 'rgba(47, 92, 115, 1)',
+		's': white || '#ffffff',
+		'w': white || '#ffffff',
+	};
+	
+	const regex = /~(\w)~([^~]*)/gs;
+	let match;
+	let parts = [];
+	let lastIndex = 0;
+
+	// replace ~bold~ to ~h~ for simplicity
+	text = text.replace("~bold~", "~h~");
+
+	while ((match = regex.exec(text)) !== null) {
+		// Add the text before the match
+		if (match.index > lastIndex) {
+			parts.push(text.substring(lastIndex, match.index));
+		}
+
+		// other formatting than color
+		let tag = match[1];
+		if (tag == "n") {
+			// </br>
+			parts.push(<br />);
+		} else if (tag == "h") {
+			// we must look for the next ~h~ to know where to stop
+			let nextH = text.indexOf("~h~", regex.lastIndex);
+			if (nextH == -1) {
+				// no closing tag, we'll just add the rest of the text
+				parts.push(text.substring(regex.lastIndex));
+				break;
+			} else {
+				// add text between ~h~ as bold
+				let boldText = text.substring(regex.lastIndex, nextH);
+				parts.push(<b>{boldText}</b>);
+				// update the last index to be after the closing ~h~
+				lastIndex = nextH + 3; // 3 is the length of "~h~"
+			}
+		} else {
+			// Add the colored text (from the first ~ to the next ~ or the end of the string)
+			parts.push(<span style={{ color: colorMap[match[1]] || '#000' }}>{match[2]}</span>);
+		}
+
+		// Update the last index to the end of the current match
+		lastIndex = regex.lastIndex;
+	}
+
+	// Add the rest of the string after the last match, if there is any
+	if (lastIndex < text.length) {
+		parts.push(text.substring(lastIndex));
+	}
+
+	return parts;
+}
+
+function halfOpacity(text: string) {
+	const regex = /<50>(.*?)<\/50>/g;
+	let match;
+	let parts = [];
+	let lastIndex = 0;
+
+	while ((match = regex.exec(text)) !== null) {
+		if (match.index > lastIndex) {
+			parts.push(
+				ColorText(text.substring(lastIndex, match.index))
+			);
+			// parts.push(text.substring(lastIndex, match.index));
+		}
+
+		// Here we add match[1] (the content inside the tags), not match[0] (the whole match)
+		parts.push(<span style={{ opacity: 0.5 }}>{ColorText(match[1])}</span>);
+		// parts.push(<span style={{opacity: 0.5}}>{match[1]}</span>);
+		lastIndex = regex.lastIndex;
+	}
+
+	// Add the rest of the string after the last match, if there is any
+	if (lastIndex < text.length) {
+		parts.push(
+			ColorText(text.substring(lastIndex))
+		);
+		// parts.push(text.substring(lastIndex));
+	}
+
+	return parts;
+}
 
 const ListMenu: React.FC = () => {
 	const [menu, setMenu] = useState<MenuSettings>({
@@ -291,34 +404,6 @@ const ListMenu: React.FC = () => {
 		setListMenuOpen(visible);
 	}, [visible]);
 
-	function halfOpacity(text: string) {
-		const regex = /<50>(.*?)<\/50>/g;
-		let match;
-		let parts = [];
-		let lastIndex = 0;
-		while ((match = regex.exec(text)) !== null) {
-			if (match.index > lastIndex) {
-				parts.push(text.substring(lastIndex, match.index));
-			}
-	
-			// Here we add match[1] (the content inside the tags), not match[0] (the whole match)
-			parts.push(<span className={classes["50"]}>{match[1]}</span>);
-	
-			lastIndex = regex.lastIndex;
-		}
-	
-		// Add the rest of the string after the last match, if there is any
-		if (lastIndex < text.length) {
-			parts.push(text.substring(lastIndex));
-		}
-	
-		return parts;
-	}
-
-	function positionChange(position: FloatingPosition): void {
-		console.log(`Tooltip position changed to ${position}`);
-	}
-
 	return (
 		<>
 			{visible && (
@@ -337,7 +422,6 @@ const ListMenu: React.FC = () => {
 					}
 					transitionDuration={0}
 					classNames={{ tooltip: classes.tooltip }}
-					onPositionChange={positionChange}
 				>
 					<Box className={`${classes.container} ${classes.wrapTheWrap}`}>
 						<Header title={menu.title} />
@@ -383,3 +467,4 @@ const ListMenu: React.FC = () => {
 };
 
 export default ListMenu;
+export { ListMenu, ColorText, halfOpacity };

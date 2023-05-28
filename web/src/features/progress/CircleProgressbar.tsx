@@ -11,6 +11,7 @@ import { useNuiEvent } from "../../hooks/useNuiEvent";
 import { fetchNui } from "../../utils/fetchNui";
 import ScaleFade from "../../transitions/ScaleFade";
 import type { CircleProgressbarProps } from "../../typings";
+import { ColorText } from "../menu/list";
 
 // 33.5 is the r of the circle
 const progressCircle = keyframes({
@@ -114,7 +115,7 @@ const CircleProgressbar: React.FC = () => {
 							}
 						/>
 						{label && (
-							<Text className={classes.label}>{label}</Text>
+							<Text className={classes.label}>{ColorText(label)}</Text>
 						)}
 					</Stack>
 				</ScaleFade>

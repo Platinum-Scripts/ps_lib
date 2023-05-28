@@ -4,6 +4,7 @@ import { useNuiEvent } from "../../hooks/useNuiEvent";
 import { fetchNui } from "../../utils/fetchNui";
 import ScaleFade from "../../transitions/ScaleFade";
 import type { ProgressbarProps } from "../../typings";
+import { ColorText } from "../menu/list";
 
 const useStyles = createStyles((theme) => ({
 	container: {
@@ -78,7 +79,7 @@ const Progressbar: React.FC = () => {
 							}}
 						>
 							<Box className={classes.labelWrapper}>
-								<Text className={classes.label}>{label}</Text>
+								<Text className={classes.label}>{ColorText(label)}</Text>
 							</Box>
 						</Box>
 					</Box>

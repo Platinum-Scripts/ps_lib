@@ -11,9 +11,10 @@ import {
 	Text,
 	keyframes,
 } from "@mantine/core";
-import React, { useContext, useEffect } from "react";
+import React, { Children, useContext, useEffect } from "react";
 import type { NotificationProps } from "../../typings";
 import { ListMenuContext } from "../../App";
+import { ColorText } from "../menu/list";
 
 const useStyles = createStyles((theme) => ({
 	container: {
@@ -242,21 +243,22 @@ const Notifications: React.FC = () => {
 						<Stack spacing={0}>
 							{data.title && (
 								<Text className={classes.title}>
-									{data.title}
+									{ColorText(data.title)}
 								</Text>
 							)}
 							{data.description && (
-								<ReactMarkdown
+								<Box
 									className={
 										!data.title
 											? classes.descriptionOnly
 											: classes.description
 									}
 								>
-									{data.description}
-								</ReactMarkdown>
+									<Text>{ColorText(data.description)}</Text>
+								</Box>
 							)}
 						</Stack>
+
 					</Group>
 				</Box>
 			),

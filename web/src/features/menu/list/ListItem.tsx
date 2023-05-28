@@ -8,6 +8,7 @@ import { isIconUrl } from "../../../utils/isIconUrl";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { titleCase } from "title-case";
 import Textfit from '@namhong2001/react-textfit';
+import { ColorText, halfOpacity } from ".";
 
 interface Props {
 	item: MenuItem;
@@ -113,30 +114,6 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 			return halfOpacity(text);
 		}
 
-		function halfOpacity(text: string) {
-			const regex = /<50>(.*?)<\/50>/g;
-			let match;
-			let parts = [];
-			let lastIndex = 0;
-			while ((match = regex.exec(text)) !== null) {
-				if (match.index > lastIndex) {
-					parts.push(text.substring(lastIndex, match.index));
-				}
-		
-				// Here we add match[1] (the content inside the tags), not match[0] (the whole match)
-				parts.push(<span className={classes["50"]}>{match[1]}</span>);
-		
-				lastIndex = regex.lastIndex;
-			}
-		
-			// Add the rest of the string after the last match, if there is any
-			if (lastIndex < text.length) {
-				parts.push(text.substring(lastIndex));
-			}
-		
-			return parts;
-		}
-
 		return (
 			<Box
 				tabIndex={item.disabled ? -1 : index} // make untabbable if disabled
@@ -186,13 +163,13 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 						</Group>
 					) : item.checked !== undefined ? (
 						<Group position="apart" w="100%">
-							<Text className={`${classes.textContainer}`}>{item.label}</Text>
+							<Text className={`${classes.textContainer}`}>{ColorText(item.label)}</Text>
 							<CustomCheckbox checked={checked}></CustomCheckbox>
 						</Group>
 					) : item.progress !== undefined ? (
 						<Stack className={`${classes.progressStack}`} spacing={0}>
 							<Text className={`${classes.progressLabel} ${classes.textContainer}`}>
-								{item.label}
+								{ColorText(item.label)}
 							</Text>
 							<Progress
 								value={item.progress}
@@ -206,7 +183,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 						</Stack>
 					) : item.rightIcon !== undefined ? (
 						<Group position="apart" w="100%">
-							<Text className={classes.textContainer}>{item.label}</Text>
+							<Text className={classes.textContainer}>{ColorText(item.label)}</Text>
 							<i
 								className={`fa-fw ${item.rightIcon} ${classes.rightIcon}`}
 							></i>
