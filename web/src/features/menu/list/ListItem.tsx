@@ -108,26 +108,33 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 
 		const icon = item.disabled ? "fa-lock" : item.icon;
 
-		function convertTitle(text) {
+		function convertTitle(text: string) {
 			text = titleCase(text);
-			// if the text has <50>(.*)</50> then we need to convert it to wrap that part in a span with 50% opacity
-			const regex = /<50>(.*)<\/50>/g;
-			const match = regex.exec(text);
-			if (match) {
+			return halfOpacity(text);
+		}
 
-				// first part of text is just {text} then we can <span> the second part, then if there is any remaining text we can just add it to the end, we can do this recursively
-				const firstPart = text.substring(0, match.index);
-				const secondPart = text.substring(match.index + match[0].length);
-				return (
-					<>
-						{firstPart}
-						<span className={classes["50"]}>{match[1]}</span>
-						{secondPart && convertTitle(secondPart)}
-					</>
-				);
-			} else {
-				return text;
+		function halfOpacity(text: string) {
+			const regex = /<50>(.*?)<\/50>/g;
+			let match;
+			let parts = [];
+			let lastIndex = 0;
+			while ((match = regex.exec(text)) !== null) {
+				if (match.index > lastIndex) {
+					parts.push(text.substring(lastIndex, match.index));
+				}
+		
+				// Here we add match[1] (the content inside the tags), not match[0] (the whole match)
+				parts.push(<span className={classes["50"]}>{match[1]}</span>);
+		
+				lastIndex = regex.lastIndex;
 			}
+		
+			// Add the rest of the string after the last match, if there is any
+			if (lastIndex < text.length) {
+				parts.push(text.substring(lastIndex));
+			}
+		
+			return parts;
 		}
 
 		return (

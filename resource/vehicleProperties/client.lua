@@ -95,7 +95,7 @@ end)
 
 ---@param vehicle number
 ---@return VehicleProperties?
-function lib.getVehicleProperties(vehicle)
+function lib.getVehicleProperties(vehicle, ignoreDamage)
       if DoesEntityExist(vehicle) then
           ---@type number | number[], number | number[]
           local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
@@ -104,6 +104,8 @@ function lib.getVehicleProperties(vehicle)
           if GetIsVehiclePrimaryColourCustom(vehicle) then
               colorPrimary = { GetVehicleCustomPrimaryColour(vehicle) }
           end
+
+
 
           if GetIsVehicleSecondaryColourCustom(vehicle) then
               colorSecondary = { GetVehicleCustomSecondaryColour(vehicle) }
@@ -159,22 +161,37 @@ function lib.getVehicleProperties(vehicle)
               neons[i + 1] = IsVehicleNeonLightEnabled(vehicle, i)
           end
 
+          local bodyHealth = math.floor(GetVehicleBodyHealth(vehicle) + 0.5);
+          local engineHealth = math.floor(GetVehicleEngineHealth(vehicle) + 0.5);
+          local tankHealth = math.floor(GetVehiclePetrolTankHealth(vehicle) + 0.5);
+          local fuelLevel = math.floor(GetVehicleFuelLevel(vehicle) + 0.5);
+          local dirtLevel = math.floor(GetVehicleDirtLevel(vehicle) + 0.5);
+
+          if ignoreDamage then
+            bodyHealth = 1000.0
+            engineHealth = 1000.0
+            tankHealth = 1000.0
+            fuelLevel = 65.0
+            dirtLevel = 0.0
+          end
+
           return {
               model = GetEntityModel(vehicle),
               plate = GetVehicleNumberPlateText(vehicle),
               plateIndex = GetVehicleNumberPlateTextIndex(vehicle),
-              bodyHealth = math.floor(GetVehicleBodyHealth(vehicle) + 0.5),
-              engineHealth = math.floor(GetVehicleEngineHealth(vehicle) + 0.5),
-              tankHealth = math.floor(GetVehiclePetrolTankHealth(vehicle) + 0.5),
-              fuelLevel = math.floor(GetVehicleFuelLevel(vehicle) + 0.5),
+              bodyHealth = bodyHealth,
+              engineHealth = engineHealth,
+              tankHealth = tankHealth,
+              fuelLevel = fuelLevel,
               oilLevel = math.floor(GetVehicleOilLevel(vehicle) + 0.5),
-              dirtLevel = math.floor(GetVehicleDirtLevel(vehicle) + 0.5),
+              dirtLevel = dirtLevel,
               color1 = colorPrimary,
               color2 = colorSecondary,
               pearlescentColor = pearlescentColor,
               interiorColor = GetVehicleInteriorColor(vehicle),
               dashboardColor = GetVehicleDashboardColour(vehicle),
               wheelColor = wheelColor,
+              ignoreDamage = ignoreDamage or false,
               wheelWidth = GetVehicleWheelWidth(vehicle),
               wheelSize = GetVehicleWheelSize(vehicle),
               wheels = GetVehicleWheelType(vehicle),
@@ -240,11 +257,7 @@ function lib.getVehicleProperties(vehicle)
               windows = damage.windows,
               doors = damage.doors,
               tyres = damage.tyres,
-              -- no setters?
-              -- leftHeadlight = GetIsLeftVehicleHeadlightDamaged(vehicle),
-              -- rightHeadlight = GetIsRightVehicleHeadlightDamaged(vehicle),
-              -- frontBumper = IsVehicleBumperBrokenOff(vehicle, true),
-              -- rearBumper = IsVehicleBumperBrokenOff(vehicle, false),
+              category = GetVehicleClass(vehicle),
           }
       end
 end
@@ -591,6 +604,10 @@ function lib.setVehicleProperties(vehicle, props)
 
       if props.modLightbar then
           SetVehicleMod(vehicle, 49, props.modLightbar, false)
+      end
+
+      if props.ignoreDamage == true then
+        SetVehicleFixed(vehicle)
       end
 
       return true

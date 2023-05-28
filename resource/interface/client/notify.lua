@@ -12,8 +12,22 @@
 ---@field icon? string | {[1]: IconProp, [2]: string};
 ---@field iconColor? string;
 
+local resName = GetCurrentResourceName()
+local ids = {
+	1, 2, 3
+}
+local lastId = 0
+
 ---@param data NotifyProps
 function lib.notify(data)
+	if not data.id then
+		lastId = lastId + 1
+		if lastId > #ids then
+			lastId = 1
+		end
+		data.id = resName .. ":id#" .. ids[lastId]
+	end
+
 	SendNUIMessage(
 		{
 		action = "notify",
@@ -31,6 +45,14 @@ end
 
 ---@param data DefaultNotifyProps
 function lib.defaultNotify(data)
+	if not data.id then
+		lastId = lastId + 1
+		if lastId > #ids then
+			lastId = 1
+		end
+		data.id = resName .. ":id#" .. ids[lastId]
+	end
+	
 	-- Backwards compat for v3
 	data.type = data.status
 	if data.type == "inform" then

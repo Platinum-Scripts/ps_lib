@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import type { MenuPosition, MenuSettings } from '../../../typings';
 import { ListMenuContext } from '../../../App';
+import { FloatingPosition } from '@mantine/core/lib/Floating';
 
 const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCount: number; selected: number }) => ({
 	tooltip: {
@@ -62,6 +63,9 @@ const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCo
 		color: theme.colors.lighter[0],
 		borderRadius: theme.radius.sm,
 		fontWeight: 900
+	},
+	"50": {
+		opacity: 0.5,
 	}
 }));
 
@@ -71,12 +75,16 @@ const ListMenu: React.FC = () => {
 		title: '',
 		items: [],
 	});
+
 	const [selected, setSelected] = useState(0);
 	const [visible, setVisible] = useState(false);
 	const [indexStates, setIndexStates] = useState<Record<number, number>>({});
 	const [checkedStates, setCheckedStates] = useState<Record<number, boolean>>({});
 	const listRefs = useRef<Array<HTMLDivElement | null>>([]);
 	const firstRenderRef = useRef(false);
+	// A reference to keep track of which keys are being held down
+	const keysDownRef = useRef<Record<string, number>>({}); // {key: timeKeyPressed}
+
 	const { classes } = useStyles({ position: menu.position, itemCount: menu.items.length, selected });
 
 	const listMenuContext = useContext(ListMenuContext);
@@ -96,11 +104,14 @@ const ListMenu: React.FC = () => {
 		if (firstRenderRef.current) firstRenderRef.current = false;
 		switch (e.code) {
 			case 'ArrowDown':
-				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch(err => console.log(err));
+				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 				setSelected((selected) => {
 					if (selected >= menu.items.length - 1) return (selected = 0);
 					return selected + 1;
 				});
+				setTimeout(() => {
+					return;
+				}, 50);
 				break;
 			case 'ArrowUp':
 				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
@@ -108,24 +119,35 @@ const ListMenu: React.FC = () => {
 					if (selected <= 0) return (selected = menu.items.length - 1);
 					return selected - 1;
 				});
+				setTimeout(() => {
+					return;
+				}, 50);
 				break;
 			case 'ArrowRight':
-				if (Array.isArray(menu.items[selected].values))
+				if (Array.isArray(menu.items[selected].values)) {
+					// Start tracking when a key is pressed
+					if (!keysDownRef.current[e.code]) keysDownRef.current[e.code] = Date.now();
+
 					fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
-				setIndexStates({
-					...indexStates,
-					[selected]:
-						indexStates[selected] + 1 <= menu.items[selected].values?.length! - 1 ? indexStates[selected] + 1 : 0,
-				});
+					setIndexStates({
+						...indexStates,
+						[selected]:
+							indexStates[selected] + 1 <= menu.items[selected].values?.length! - 1 ? indexStates[selected] + 1 : 0,
+					});
+				}
 				break;
 			case 'ArrowLeft':
-				if (Array.isArray(menu.items[selected].values))
+				if (Array.isArray(menu.items[selected].values)) {
+					// Start tracking when a key is pressed
+					if (!keysDownRef.current[e.code]) keysDownRef.current[e.code] = Date.now();
+
 					fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_LEFT_RIGHT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
-				setIndexStates({
-					...indexStates,
-					[selected]:
-						indexStates[selected] - 1 >= 0 ? indexStates[selected] - 1 : menu.items[selected].values?.length! - 1,
-				});
+					setIndexStates({
+						...indexStates,
+						[selected]:
+							indexStates[selected] - 1 >= 0 ? indexStates[selected] - 1 : menu.items[selected].values?.length! - 1,
+					});
+				}
 
 				break;
 			case 'Enter':
@@ -147,8 +169,19 @@ const ListMenu: React.FC = () => {
 				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "SELECT", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 				fetchNui('confirmSelected', [selected, indexStates[selected]]).catch();
 				if (menu.items[selected].close === undefined || menu.items[selected].close) setVisible(false);
+
+				// 50ms delay to prevent double clicks
+				setTimeout(() => {
+					return;
+				}, 50);
+
 				break;
 		}
+	};
+
+	// Add a function to stop tracking when a key is released
+	const stopMoveMenu = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		delete keysDownRef.current[e.code];
 	};
 
 	useEffect(() => {
@@ -161,11 +194,28 @@ const ListMenu: React.FC = () => {
 
 	useEffect(() => {
 		if (!menu.items[selected]?.values || firstRenderRef.current) return;
+		// The base delay
+		let delay = 33;
+
+		// If a key is being pressed, adjust the delay based on how long it's been pressed
+		if (keysDownRef.current["ArrowRight"]) {
+			// Get the number of seconds the key has been pressed
+			let secondsKeyPressed = (Date.now() - keysDownRef.current["ArrowRight"]) / 1000;
+			// Reduce the delay exponentially based on how long the key has been pressed
+			delay /= Math.pow(3, secondsKeyPressed);
+		} else if (keysDownRef.current["ArrowLeft"]) {
+			// Get the number of seconds the key has been pressed
+			let secondsKeyPressed = (Date.now() - keysDownRef.current["ArrowLeft"]) / 1000;
+			// Reduce the delay exponentially based on how long the key has been pressed
+			delay /= Math.pow(3, secondsKeyPressed);
+		}
+
 		const timer = setTimeout(() => {
 			fetchNui('changeIndex', [selected, indexStates[selected]]).catch();
-		}, 100);
+		}, delay);
 		return () => clearTimeout(timer);
 	}, [indexStates]);
+
 
 	useEffect(() => {
 		if (!menu.items[selected]) return;
@@ -241,6 +291,34 @@ const ListMenu: React.FC = () => {
 		setListMenuOpen(visible);
 	}, [visible]);
 
+	function halfOpacity(text: string) {
+		const regex = /<50>(.*?)<\/50>/g;
+		let match;
+		let parts = [];
+		let lastIndex = 0;
+		while ((match = regex.exec(text)) !== null) {
+			if (match.index > lastIndex) {
+				parts.push(text.substring(lastIndex, match.index));
+			}
+	
+			// Here we add match[1] (the content inside the tags), not match[0] (the whole match)
+			parts.push(<span className={classes["50"]}>{match[1]}</span>);
+	
+			lastIndex = regex.lastIndex;
+		}
+	
+		// Add the rest of the string after the last match, if there is any
+		if (lastIndex < text.length) {
+			parts.push(text.substring(lastIndex));
+		}
+	
+		return parts;
+	}
+
+	function positionChange(position: FloatingPosition): void {
+		console.log(`Tooltip position changed to ${position}`);
+	}
+
 	return (
 		<>
 			{visible && (
@@ -248,8 +326,8 @@ const ListMenu: React.FC = () => {
 					label={
 						isValuesObject(menu.items[selected].values)
 							? // @ts-ignore
-							`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`
-							: `${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`
+							halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`)
+							: halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`)
 					}
 					opened={
 						isValuesObject(menu.items[selected].values)
@@ -259,10 +337,11 @@ const ListMenu: React.FC = () => {
 					}
 					transitionDuration={0}
 					classNames={{ tooltip: classes.tooltip }}
+					onPositionChange={positionChange}
 				>
 					<Box className={`${classes.container} ${classes.wrapTheWrap}`}>
 						<Header title={menu.title} />
-						<Box className={classes.buttonsWrapper} onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)}>
+						<Box className={classes.buttonsWrapper} onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)} onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => stopMoveMenu(e)}>
 							<FocusTrap active={visible}>
 								<Stack spacing={8} p={8} sx={{ overflowY: 'scroll' }}>
 									{menu.items.map((item, index) => (
