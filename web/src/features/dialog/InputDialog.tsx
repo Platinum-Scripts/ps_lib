@@ -1,5 +1,5 @@
 import { Group, Modal, Button, Stack } from "@mantine/core";
-import React from "react";
+import React, { FormEvent } from "react";
 import { useNuiEvent } from "../../hooks/useNuiEvent";
 import { useLocales } from "../../providers/LocaleProvider";
 import { fetchNui } from "../../utils/fetchNui";
@@ -36,6 +36,13 @@ const InputDialog: React.FC = () => {
 		name: "test",
 	});
 
+	const { watch } = form;
+	const watchAllFields = watch();
+
+	const [watchables, setWatchables] = React.useState<boolean>(false);
+	const [cbe, setCbe] = React.useState<string>("");
+	const [lastWatch, setLastWatch] = React.useState<any>(null);
+
 	useNuiEvent<InputProps>("openDialog", (data) => {
 		setFields(data);
 		setVisible(true);
@@ -46,17 +53,17 @@ const InputDialog: React.FC = () => {
 					value:
 						row.type !== "checkbox"
 							? row.type === "date" ||
-							  row.type === "date-range" ||
-							  row.type === "time"
+								row.type === "date-range" ||
+								row.type === "time"
 								? // Set date to current one if default is set to true
-								  row.default === true
+								row.default === true
 									? new Date().getTime()
 									: Array.isArray(row.default)
-									? row.default.map((date) =>
+										? row.default.map((date) =>
 											new Date(date).getTime()
-									  )
-									: row.default &&
-									  new Date(row.default).getTime()
+										)
+										: row.default &&
+										new Date(row.default).getTime()
 								: row.default
 							: row.checked,
 				} || { value: null }
@@ -68,6 +75,15 @@ const InputDialog: React.FC = () => {
 				) as Array<OptionValue>;
 			}
 		});
+
+		if (data.options?.onRowUpdate) {
+			// update watchables
+			setWatchables(true);
+			setCbe(data.options?.cbe || "");
+		} else {
+			setWatchables(false);
+			setCbe("");
+		}
 	});
 
 	useNuiEvent("closeInputDialog", () => {
@@ -93,6 +109,70 @@ const InputDialog: React.FC = () => {
 		fieldForm.remove();
 		fetchNui("inputData", values);
 	});
+
+
+	// create a function that will create a timeout for 50 ms to send the cbe to the server, but if it is called again, it will clear the timeout and create a new one that is 1/5 of the time. do not go under 5ms.
+	const stageCbe = function (cbe: string) {
+		if (lastWatch === null) return function() {} // if last watch is null, return a function that does nothing
+
+		let timeout: any;
+		let delay = 50;
+		let start = Date.now();
+
+		return function () {
+			clearTimeout(timeout);
+
+			let secondsElapsed = (Date.now() - start) / 1000;
+			delay /= Math.pow(2, secondsElapsed);
+			if (delay < 6) {
+				delay = 6;
+			}
+
+			timeout = setTimeout(() => {
+				fetchNui(cbe, lastWatch).catch();
+				start = Date.now();
+			}, delay);
+		};
+	};
+
+	React.useEffect(() => {
+		if (!watchables || !visible || !watchAllFields || cbe === "" || !watchAllFields.test) {
+			return;
+		} else {
+			if (watchAllFields && watchAllFields.test) {
+				let values = Object.values(watchAllFields.test).map(
+					(obj: { value: any }) => obj.value
+				);
+
+				if (lastWatch !== values) {
+					if (lastWatch === null) {
+						setLastWatch(values);
+						// fetchNui(cbe, watchAllFields)
+						stageCbe(cbe)();
+						return;
+					} else {
+						let diff = [];
+						// loop each value and compare to last watch
+						lastWatch.forEach((value: any, index: number) => {
+							if (value !== values[index]) {
+								diff.push({
+									index: index,
+									value: values[index],
+								});
+							}
+						});
+
+						// if there is a difference, send it to the server
+						if (diff.length > 0) {
+							setLastWatch(values);
+							// fetchNui(cbe, watchAllFields)
+							stageCbe(cbe)();
+						}
+					}
+				}
+			}
+		}
+	}, [watchAllFields]);
 
 	return (
 		<>
@@ -140,12 +220,12 @@ const InputDialog: React.FC = () => {
 									)}
 									{(row.type === "select" ||
 										row.type === "multi-select") && (
-										<SelectField
-											row={row}
-											index={index}
-											control={form.control}
-										/>
-									)}
+											<SelectField
+												row={row}
+												index={index}
+												control={form.control}
+											/>
+										)}
 									{row.type === "number" && (
 										<NumberField
 											control={form.control}
@@ -175,7 +255,7 @@ const InputDialog: React.FC = () => {
 										/>
 									)}
 									{row.type === "date" ||
-									row.type === "date-range" ? (
+										row.type === "date-range" ? (
 										<DateField
 											control={form.control}
 											row={row}

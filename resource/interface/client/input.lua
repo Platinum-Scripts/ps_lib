@@ -28,11 +28,14 @@ local input
 ---@param rows string[] | InputDialogRowProps[]
 ---@param options InputDialogOptionsProps[]?
 ---@return string[] | number[] | boolean[] | nil
+local resName = GetCurrentResourceName()
+local lastId = 0;
 function lib.inputDialog(heading, rows, options)
 	if input then
 		return
 	end
 	input = promise.new()
+	
 
 	-- Backwards compat with string tables
 	for i = 1, # rows do
@@ -44,6 +47,23 @@ function lib.inputDialog(heading, rows, options)
 		end
 	end
 
+	local rawOptions = {[1] = options.onRowUpdate};
+
+	if options and options.onRowUpdate then
+		options.onRowUpdate = true;
+		options.cbe = "onRowUpdate:"..resName..":"..lastId;
+	end
+
+	RegisterNUICallback("onRowUpdate:"..resName..":"..lastId, function(data, cb)
+		if cb then
+			pcall(cb, 1)
+		end
+
+		if rawOptions and rawOptions[1] then
+			rawOptions[1](data)
+		end
+	end)
+
 	lib.setNuiFocus(false)
 	SendNUIMessage(
 		{
@@ -54,6 +74,8 @@ function lib.inputDialog(heading, rows, options)
 			options = options
 		}
 	})
+
+	lastId = lastId + 1;
 
 	return Citizen.Await(input)
 end

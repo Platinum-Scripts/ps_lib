@@ -15,6 +15,8 @@ export interface InputProps {
 	>;
 	options?: {
 		allowCancel?: boolean;
+		onRowUpdate?: (row: any) => void;
+		cbe?: string;
 	};
 }
 
