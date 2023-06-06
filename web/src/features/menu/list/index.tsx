@@ -11,6 +11,7 @@ import type { MenuPosition, MenuSettings } from '../../../typings';
 import { ListMenuContext } from '../../../App';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
 import { theme } from '../../../theme';
+import {autoCrop} from "../../notifications/NotificationWrapper";
 
 let white: string;
 
@@ -403,6 +404,15 @@ const ListMenu: React.FC = () => {
 		if (setListMenuOpen === undefined) return;
 		setListMenuOpen(visible);
 	}, [visible]);
+
+	menu.items.map(
+		async(item, index) => {
+			if (item && item.icon && typeof(item.icon) === 'string' && item.icon.includes('data:image/')) {
+				item.icon = await autoCrop(item.icon);
+			}
+			return item;
+		}
+	);
 
 	return (
 		<>

@@ -16,6 +16,7 @@
     "@namhong2001/react-textfit": "^2.0.0",
     "@vitejs/plugin-react": "^3.0.1",
     "dayjs": "^1.11.7",
+    "fabric": "^5.3.0",
     "focus-trap-react": "^9.0.2",
     "framer-motion": "^8.0.2",
     "prettier": "^2.7.1",

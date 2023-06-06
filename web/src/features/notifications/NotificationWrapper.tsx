@@ -11,10 +11,80 @@ import {
 	Text,
 	keyframes,
 } from "@mantine/core";
-import React, { Children, useContext, useEffect } from "react";
+import React, { Children, useContext, useEffect, useState } from "react";
 import type { NotificationProps } from "../../typings";
 import { ListMenuContext } from "../../App";
 import { ColorText } from "../menu/list";
+
+// fabric import statement
+import { fabric } from 'fabric';
+
+async function autoCrop(url: string) {
+	return new Promise((resolve, reject) => {
+		if (!url.startsWith("data:image/")) {
+			resolve(url);
+			return;
+		}
+
+		const img = new Image();
+		img.src = url;
+
+		img.onload = function() {
+			const canvas = document.createElement('canvas');
+			const context = canvas.getContext('2d');
+			canvas.width = img.width;
+			canvas.height = img.height;
+			context.drawImage(img, 0, 0, img.width, img.height);
+
+			const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+			const data = imageData.data;
+
+			let top = 0, bottom = canvas.height, left = 0, right = canvas.width;
+			let rowEmpty = (rowIndex) => {
+				for(let x = 0; x < canvas.width; x++)
+					if(data[(rowIndex*canvas.width+x)*4+3] !== 0)
+						return false;
+				return true;
+			};
+			let colEmpty = (colIndex) => {
+				for(let y = 0; y < canvas.height; y++)
+					if(data[(y*canvas.width+colIndex)*4+3] !== 0)
+						return false;
+				return true;
+			};
+
+			// loop pixels, if pixel is 85% transparent, make it fully transparent
+			for (let i = 0; i < data.length; i += 4) {
+				if (data[i + 3] <= 100) {
+					data[i + 3] = 0;
+				}
+			}
+
+			// put img data back on canvas
+			context.putImageData(imageData, 0, 0);
+			
+			while(top < bottom && rowEmpty(top))
+				top++;
+			while(bottom > top && rowEmpty(bottom-1))
+				bottom--;
+			while(left < right && colEmpty(left))
+				left++;
+			while(right > left && colEmpty(right-1))
+				right--;
+
+			const croppedCanvas = document.createElement('canvas');
+			croppedCanvas.width = right-left;
+			croppedCanvas.height = bottom-top;
+			croppedCanvas.getContext('2d').drawImage(canvas, left, top, right-left, bottom-top, 0, 0, right-left, bottom-top);
+
+			resolve(croppedCanvas.toDataURL());
+		};
+
+		img.onerror = function() {
+			reject(new Error('Could not load image at ' + url));
+		};
+	});
+};
 
 const useStyles = createStyles((theme) => ({
 	container: {
@@ -43,6 +113,9 @@ const useStyles = createStyles((theme) => ({
 		fontFamily: "Roboto",
 		lineHeight: "normal",
 	},
+	avatar: {
+		backgroundColor: theme.colors.lighter[1],
+	}
 }));
 
 // I hate this
@@ -122,8 +195,9 @@ const Notifications: React.FC = () => {
 
 	const { classes } = useStyles();
 
-	useNuiEvent<NotificationProps>("notify", (data) => {
+	async function notify(data: NotificationProps) {
 		if (!data.title && !data.description) return;
+
 		// Backwards compat with old notifications
 		let position = data.position;
 		switch (position) {
@@ -152,7 +226,7 @@ const Notifications: React.FC = () => {
 					data.icon = "fa-circle-info";
 					break;
 			}
-		} else if (!data.icon.startsWith("fa-")) {
+		} else if (!data.icon.startsWith("fa-") && !data.icon.startsWith("data:image/")) {
 			data.icon = `fa-${data.icon}`;
 		}
 
@@ -188,89 +262,188 @@ const Notifications: React.FC = () => {
 			}
 		}
 
-		toast.custom(
-			(t) => (
-				<Box
-					sx={{
-						animation: t.visible
-							? `${position?.includes("bottom")
-								? enterAnimationBottom
-								: enterAnimationTop
-							} 0.2s ease-out forwards`
-							: `${position?.includes("right")
-								? exitAnimationRight
-								: position?.includes("left")
-									? exitAnimationLeft
-									: position === "top-center"
-										? exitAnimationTop
-										: position
-											? exitAnimationBottom
-											: exitAnimationRight
-							} 0.4s ease-in forwards`,
-					}}
-					style={data.style}
-					className={`${classes.container}`}
-				>
-					<Group noWrap spacing={12}>
-						{data.icon && (
-							<>
-								{!data.iconColor ? (
-									<Avatar
-										color={
-											data.type === "error"
-												? "red"
-												: data.type === "success"
-													? "teal"
-													: data.type === "warning"
-														? "yellow"
-														: "blue"
-										}
-										radius="xl"
-										size={32}
-									>
+		if (data.icon && data.icon.startsWith("data:image")) {
+			autoCrop(data.icon).then((res) => {
+				toast.custom(
+					(t) => (
+						<Box
+							sx={{
+								animation: t.visible
+									? `${position?.includes("bottom")
+										? enterAnimationBottom
+										: enterAnimationTop
+									} 0.2s ease-out forwards`
+									: `${position?.includes("right")
+										? exitAnimationRight
+										: position?.includes("left")
+											? exitAnimationLeft
+											: position === "top-center"
+												? exitAnimationTop
+												: position
+													? exitAnimationBottom
+													: exitAnimationRight
+									} 0.4s ease-in forwards`,
+							}}
+							style={data.style}
+							className={`${classes.container}`}
+						>
+							<Group noWrap spacing={12}>
+								{data.icon && (
+									<>
+										{!data.iconColor ? (
+											<Avatar
+												color={
+													data.type === "error"
+														? "red"
+														: data.type === "success"
+															? "teal"
+															: data.type === "warning"
+																? "yellow"
+																: "blue"
+												}
+												radius="xl"
+												size={42}
+												style={{
+													backgroundColor: "transparent",
+												}}
+												src = {res}
+											>
+												{(!data.icon.startsWith("data:image/")) && (
+												<i
+													className={`fa-solid fa-fw fa-lg findme ${data.icon}`}
+												/>
+												)}
+											</Avatar>
+										) : (
+											<i
+												className={`fa-solid fa-fw fa-lg findme ${data.icon}`}
+												style={{ color: data.iconColor }}
+											/>
+										)}
+									</>
+								)}
+								<Stack spacing={0}>
+									{data.title && (
+										<Text className={classes.title}>
+											{ColorText(data.title)}
+										</Text>
+									)}
+									{data.description && (
+										<Box
+											className={
+												!data.title
+													? classes.descriptionOnly
+													: classes.description
+											}
+										>
+											<Text>{ColorText(data.description)}</Text>
+										</Box>
+									)}
+								</Stack>
+		
+							</Group>
+						</Box>
+					),
+					{
+						id: data.id?.toString(),
+						duration: data.duration || 5000,
+						position: position,
+					}
+				);
+			});
+		} else {
+			toast.custom(
+				(t) => (
+					<Box
+						sx={{
+							animation: t.visible
+								? `${position?.includes("bottom")
+									? enterAnimationBottom
+									: enterAnimationTop
+								} 0.2s ease-out forwards`
+								: `${position?.includes("right")
+									? exitAnimationRight
+									: position?.includes("left")
+										? exitAnimationLeft
+										: position === "top-center"
+											? exitAnimationTop
+											: position
+												? exitAnimationBottom
+												: exitAnimationRight
+								} 0.4s ease-in forwards`,
+						}}
+						style={data.style}
+						className={`${classes.container}`}
+					>
+						<Group noWrap spacing={12}>
+							{data.icon && (
+								<>
+									{!data.iconColor ? (
+										<Avatar
+											color={
+												data.type === "error"
+													? "red"
+													: data.type === "success"
+														? "teal"
+														: data.type === "warning"
+															? "yellow"
+															: "blue"
+											}
+											radius="xl"
+											size={32}
+											className={classes.avatar}
+										>
+											<i
+												className={`fa-solid fa-fw fa-lg findme ${data.icon}`}
+											/>
+										</Avatar>
+									) : (
 										<i
 											className={`fa-solid fa-fw fa-lg findme ${data.icon}`}
+											style={{ color: data.iconColor }}
 										/>
-									</Avatar>
-								) : (
-									<i
-										className={`fa-solid fa-fw fa-lg findme ${data.icon}`}
-										style={{ color: data.iconColor }}
-									/>
+									)}
+								</>
+							)}
+							<Stack spacing={0}>
+								{data.title && (
+									<Text className={classes.title}>
+										{ColorText(data.title)}
+									</Text>
 								)}
-							</>
-						)}
-						<Stack spacing={0}>
-							{data.title && (
-								<Text className={classes.title}>
-									{ColorText(data.title)}
-								</Text>
-							)}
-							{data.description && (
-								<Box
-									className={
-										!data.title
-											? classes.descriptionOnly
-											: classes.description
-									}
-								>
-									<Text>{ColorText(data.description)}</Text>
-								</Box>
-							)}
-						</Stack>
+								{data.description && (
+									<Box
+										className={
+											!data.title
+												? classes.descriptionOnly
+												: classes.description
+										}
+									>
+										<Text>{ColorText(data.description)}</Text>
+									</Box>
+								)}
+							</Stack>
+	
+						</Group>
+					</Box>
+				),
+				{
+					id: data.id?.toString(),
+					duration: data.duration || 3000,
+					position: position,
+				}
+			);
+		}
+	}
 
-					</Group>
-				</Box>
-			),
-			{
-				id: data.id?.toString(),
-				duration: data.duration || 3000,
-				position: position,
-			}
-		);
+	useNuiEvent<NotificationProps>("notify", async (data) => {
+		notify(data);
 	});
 
 	return <Toaster />;
 };
 
+// we need to expoet Notifications and autoCrop
+export { Notifications, autoCrop };
+// default export is Notifications
 export default Notifications;

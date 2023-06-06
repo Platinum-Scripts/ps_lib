@@ -1,4 +1,4 @@
-import { Box, Group, Stack, Text, Progress, Image } from "@mantine/core";
+import { Box, Group, Stack, Text, Progress, Image, Avatar } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { forwardRef } from "react";
 import CustomCheckbox from "./CustomCheckbox";
@@ -39,7 +39,11 @@ const useStyles = createStyles(
 			maxWidth: 384,
 		},
 		iconImage: {
-			maxWidth: 32,
+			maxWidth: 42,
+			maxHeight: 32,
+			backgroundColor: "transparent",
+			borderRadius: 32,
+			// center the image in the icon container
 		},
 		buttonWrapper: {
 			paddingLeft: 5,
@@ -52,6 +56,7 @@ const useStyles = createStyles(
 			alignItems: "center",
 			width: 32,
 			height: 32,
+			backgroundColor: "transparent",
 		},
 		icon: {
 			fontSize: 24,
@@ -127,11 +132,15 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 					{icon && (
 						<Box className={classes.iconContainer}>
 							{typeof icon === "string" && isIconUrl(icon) ? (
-								<img
-									src={icon}
-									alt="Missing image"
-									className={classes.iconImage}
-								/>
+								<Avatar
+									radius="xl"
+									size={32}
+									style={{
+										backgroundColor: "transparent",
+									}}
+									src = {icon}
+								>
+								</Avatar>
 							) : (
 								<i
 									className={`fa-solid fa-fw findme ${icon} ${classes.icon}`}
