@@ -156,7 +156,7 @@ cache = {
 	game = GetGameName(),
 	resource = GetCurrentResourceName()
 }
-local notify = ("__ox_notify_%s"):format(cache.resource)
+local notify = ("__ps_notify_%s"):format(cache.resource)
 
 if context == "client" then
 	setmetatable(

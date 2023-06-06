@@ -2,7 +2,7 @@ import { cache } from "../cache";
 
 const activeEvents: Record<string, (...args) => void> = {};
 
-onNet(`__ox_cb_${cache.resource}`, (key: string, ...args: any) => {
+onNet(`__ps_cb_${cache.resource}`, (key: string, ...args: any) => {
 	const resolve = activeEvents[key];
 	return resolve && resolve(...args);
 });
@@ -20,7 +20,7 @@ export function triggerClientCallback<T = unknown>(
 		)}:${playerId}`;
 	} while (activeEvents[key]);
 
-	emitNet(`__ox_cb_${eventName}`, playerId, cache.resource, key, ...args);
+	emitNet(`__ps_cb_${eventName}`, playerId, cache.resource, key, ...args);
 
 	return new Promise<T>((resolve) => {
 		activeEvents[key] = resolve;
@@ -31,7 +31,7 @@ export function onClientCallback(
 	eventName: string,
 	cb: (playerId: number, ...args) => any
 ) {
-	onNet(`__ox_cb_${eventName}`, (resource: string, key: string, ...args) => {
+	onNet(`__ps_cb_${eventName}`, (resource: string, key: string, ...args) => {
 		const src = source;
 		let response: any;
 
@@ -44,6 +44,6 @@ export function onClientCallback(
 			console.log(`^3${e.stack}^0`);
 		}
 
-		emitNet(`__ox_cb_${resource}`, src, key, response);
+		emitNet(`__ps_cb_${resource}`, src, key, response);
 	});
 }

@@ -1,5 +1,5 @@
 local events = {}
-local cbEvent = ('__ox_cb_%s')
+local cbEvent = ('__ps_cb_%s')
 
 RegisterNetEvent(cbEvent:format(cache.resource), function(key, ...)
     local cb = events[key]
@@ -57,7 +57,15 @@ end
 local function callbackResponse(success, result, ...)
     if not success then
     	if result then
-    		return print(('^1SCRIPT ERROR: %s^0\n%s'):format(result , Citizen.InvokeNative(`FORMAT_STACK_TRACE` & 0xFFFFFFFF, nil, 0, Citizen.ResultAsString()) or ''))
+    		return print(('^1SCRIPT ERROR: %s^0\n%s'):format(
+                result,
+                Citizen.InvokeNative(
+                    `FORMAT_STACK_TRACE` & 0xFFFFFFFF,
+                    nil,
+                    0,
+                    Citizen.ResultAsString()
+                ) or '')
+            )
     	end
 
     	return false
