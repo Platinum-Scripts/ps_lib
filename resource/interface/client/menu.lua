@@ -192,6 +192,8 @@ RegisterNUICallback('changeSelected', function(data, cb)
         data[2] += 1 -- scrollIndex
     end
 
+    print("[LUA] onSelected", data[1], data[2], args)
+
     openMenu.onSelected(data[1], data[2], args)
 end)
 

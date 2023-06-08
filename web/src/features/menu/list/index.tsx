@@ -11,7 +11,7 @@ import type { MenuPosition, MenuSettings } from '../../../typings';
 import { ListMenuContext } from '../../../App';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
 import { theme } from '../../../theme';
-import {autoCrop} from "../../notifications/NotificationWrapper";
+import { autoCrop } from "../../notifications/NotificationWrapper";
 
 let white: string;
 
@@ -101,7 +101,7 @@ function ColorText(text: string) {
 		's': white || '#ffffff',
 		'w': white || '#ffffff',
 	};
-	
+
 	const regex = /~(\w)~([^~]*)/gs;
 	let match;
 	let parts = [];
@@ -219,24 +219,27 @@ const ListMenu: React.FC = () => {
 		switch (e.code) {
 			case 'ArrowDown':
 				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
-				setSelected((selected) => {
-					if (selected >= menu.items.length - 1) return (selected = 0);
-					console.log(`Selected: ${selected + 1}`)
-					return selected + 1;
-				});
+				if (!keysDownRef.current[e.code]) keysDownRef.current[e.code] = Date.now();
+
 				setTimeout(() => {
-					return;
+					return setSelected((selected) => {
+						if (selected >= menu.items.length - 1) return (selected = 0);
+						return selected + 1;
+					});
 				}, 50);
+
 				break;
 			case 'ArrowUp':
 				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
-				setSelected((selected) => {
-					if (selected <= 0) return (selected = menu.items.length - 1);
-					return selected - 1;
-				});
+				if (!keysDownRef.current[e.code]) keysDownRef.current[e.code] = Date.now();
+
 				setTimeout(() => {
-					return;
+					return setSelected((selected) => {
+						if (selected <= 0) return (selected = menu.items.length - 1);
+						return selected - 1;
+					});
 				}, 50);
+
 				break;
 			case 'ArrowRight':
 				if (Array.isArray(menu.items[selected].values)) {
@@ -341,19 +344,18 @@ const ListMenu: React.FC = () => {
 			});
 			listRefs.current[selected]?.focus({ preventScroll: true });
 		}
-		// debounces the callback to avoid spam
-		const timer = setTimeout(() => {
-			fetchNui('changeSelected', [
-				selected,
-				menu.items[selected].values
-					? indexStates[selected]
-					: menu.items[selected].checked
-						? checkedStates[selected]
-						: null,
-				menu.items[selected].values ? 'isScroll' : menu.items[selected].checked ? 'isCheck' : null,
-			]).catch();
-		}, 100);
-		return () => clearTimeout(timer);
+
+
+		fetchNui('changeSelected', [
+			selected,
+			menu.items[selected].values
+				? indexStates[selected]
+				: menu.items[selected].checked
+					? checkedStates[selected]
+					: null,
+			menu.items[selected].values ? 'isScroll' : menu.items[selected].checked ? 'isCheck' : null,
+		]).catch();
+
 	}, [selected, menu]);
 
 	useEffect(() => {
@@ -407,8 +409,8 @@ const ListMenu: React.FC = () => {
 	}, [visible]);
 
 	menu.items.map(
-		async(item, index) => {
-			if (item && item.icon && typeof(item.icon) === 'string' && item.icon.includes('data:image/')) {
+		async (item, index) => {
+			if (item && item.icon && typeof (item.icon) === 'string' && item.icon.includes('data:image/')) {
 				// item.icon = await autoCrop(item.icon);
 				item.icon = item.icon;
 			}
@@ -437,7 +439,10 @@ const ListMenu: React.FC = () => {
 				>
 					<Box className={`${classes.container} ${classes.wrapTheWrap}`}>
 						<Header title={menu.title} />
-						<Box className={classes.buttonsWrapper} onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)} onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => stopMoveMenu(e)}>
+						<Box className={classes.buttonsWrapper}
+							onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)}
+							onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => stopMoveMenu(e)}
+						>
 							<FocusTrap active={visible}>
 								<Stack spacing={8} p={8} sx={{ overflowY: 'scroll' }}>
 									{menu.items.map((item, index) => (
