@@ -221,6 +221,7 @@ const ListMenu: React.FC = () => {
 				fetchNui("PLAY_SOUND_FRONTEND", { audioName: "NAV_UP_DOWN", audioRef: "HUD_FRONTEND_DEFAULT_SOUNDSET" }).catch();
 				setSelected((selected) => {
 					if (selected >= menu.items.length - 1) return (selected = 0);
+					console.log(`Selected: ${selected + 1}`)
 					return selected + 1;
 				});
 				setTimeout(() => {
@@ -408,7 +409,8 @@ const ListMenu: React.FC = () => {
 	menu.items.map(
 		async(item, index) => {
 			if (item && item.icon && typeof(item.icon) === 'string' && item.icon.includes('data:image/')) {
-				item.icon = await autoCrop(item.icon);
+				// item.icon = await autoCrop(item.icon);
+				item.icon = item.icon;
 			}
 			return item;
 		}

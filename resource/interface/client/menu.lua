@@ -170,26 +170,29 @@ RegisterNUICallback('changeIndex', function(data, cb)
 end)
 
 RegisterNUICallback('changeSelected', function(data, cb)
-      cb(1)
-      if not openMenu or not openMenu.onSelected then return end
+    cb(1)
+    if not openMenu or not openMenu.onSelected then return end
 
-      data[1] += 1 -- selected
+    data[1] += 1 -- selected
 
 
-      local args = openMenu.options[data[1]].args
+    local args;
+    if (openMenu and openMenu.options) and (data and data[1]) and (openMenu.options[data[1]] and openMenu.options[data[1]].args) then
+        args = openMenu.options[data[1]].args
+    end
 
-      if args and type(args) ~= 'table' then
-          return error("Menu args must be passed as a table")
-      end
+    if args and type(args) ~= 'table' then
+        return error("Menu args must be passed as a table")
+    end
 
-      if not args then args = {} end
-      if data[2] then args[data[3]] = true end
+    if not args then args = {} end
+    if data[2] then args[data[3]] = true end
 
-      if data[2] and not args.isCheck then
-          data[2] += 1 -- scrollIndex
-      end
+    if data[2] and not args.isCheck then
+        data[2] += 1 -- scrollIndex
+    end
 
-      openMenu.onSelected(data[1], data[2], args)
+    openMenu.onSelected(data[1], data[2], args)
 end)
 
 RegisterNUICallback('changeChecked', function(data, cb)
