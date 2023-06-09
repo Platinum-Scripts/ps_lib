@@ -134,9 +134,12 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 							{typeof icon === "string" && isIconUrl(icon) ? (
 								<Avatar
 									radius="xl"
-									size={32}
-									style={{
-										backgroundColor: "transparent",
+									size={38}
+									imageProps={{
+										style: {
+											backgroundColor: "transparent",
+											objectFit: "contain"
+										}
 									}}
 									src = {icon}
 								>
