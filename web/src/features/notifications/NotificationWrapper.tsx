@@ -1,5 +1,5 @@
 import { useNuiEvent } from "../../hooks/useNuiEvent";
-import { toast, Toaster } from "react-hot-toast";
+import { toast, Toaster, ToastPosition } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactMarkdown from "react-markdown";
 import {
@@ -16,9 +16,6 @@ import type { NotificationProps } from "../../typings";
 import { ListMenuContext } from "../../App";
 import { ColorText } from "../menu/list";
 
-// fabric import statement
-import { fabric } from 'fabric';
-
 async function autoCrop(url: string) {
 	return new Promise((resolve, reject) => {
 		if (!url.startsWith("data:image/")) {
@@ -32,6 +29,11 @@ async function autoCrop(url: string) {
 		img.onload = function() {
 			const canvas = document.createElement('canvas');
 			const context = canvas.getContext('2d');
+			if (!context) {
+				reject(new Error('Could not get context'));
+				return;
+			}
+			
 			canvas.width = img.width;
 			canvas.height = img.height;
 			context.drawImage(img, 0, 0, img.width, img.height);
@@ -40,13 +42,13 @@ async function autoCrop(url: string) {
 			const data = imageData.data;
 
 			let top = 0, bottom = canvas.height, left = 0, right = canvas.width;
-			let rowEmpty = (rowIndex) => {
+			let rowEmpty = (rowIndex: number) => {
 				for(let x = 0; x < canvas.width; x++)
 					if(data[(rowIndex*canvas.width+x)*4+3] !== 0)
 						return false;
 				return true;
 			};
-			let colEmpty = (colIndex) => {
+			let colEmpty = (colIndex: number) => {
 				for(let y = 0; y < canvas.height; y++)
 					if(data[(y*canvas.width+colIndex)*4+3] !== 0)
 						return false;
@@ -75,7 +77,13 @@ async function autoCrop(url: string) {
 			const croppedCanvas = document.createElement('canvas');
 			croppedCanvas.width = right-left;
 			croppedCanvas.height = bottom-top;
-			croppedCanvas.getContext('2d').drawImage(canvas, left, top, right-left, bottom-top, 0, 0, right-left, bottom-top);
+			let tempContext = croppedCanvas.getContext('2d');
+			if (!tempContext) {
+				reject(new Error('Could not get context'));
+				return;
+			}
+
+			tempContext.drawImage(canvas, left, top, right-left, bottom-top, 0, 0, right-left, bottom-top);
 
 			resolve(croppedCanvas.toDataURL());
 		};
@@ -199,7 +207,7 @@ const Notifications: React.FC = () => {
 		if (!data.title && !data.description) return;
 
 		// Backwards compat with old notifications
-		let position = data.position;
+		let position = data.position || "top-right";
 		switch (position) {
 			case "top":
 				position = "top-center";
@@ -262,6 +270,13 @@ const Notifications: React.FC = () => {
 			}
 		}
 
+		// if (!(typeof position === "string" && position.includes("center")))
+		// 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'
+		if (!(typeof position === "string" && position === "top-left" || position === "top-center" || position === "top-right" || position === "bottom-left" || position === "bottom-center" || position === "bottom-right"))
+			position = "top-right";
+
+		let Position: ToastPosition = position as ToastPosition || "top-right";
+
 		if (data.icon && data.icon.startsWith("data:image")) {
 			autoCrop(data.icon).then((res) => {
 				toast.custom(
@@ -306,7 +321,7 @@ const Notifications: React.FC = () => {
 												style={{
 													backgroundColor: "transparent",
 												}}
-												src = {res}
+												src={res||data.icon}
 											>
 												{(!data.icon.startsWith("data:image/")) && (
 												<i
@@ -347,7 +362,7 @@ const Notifications: React.FC = () => {
 					{
 						id: data.id?.toString(),
 						duration: data.duration || 5000,
-						position: position,
+						position: Position
 					}
 				);
 			});
@@ -430,7 +445,7 @@ const Notifications: React.FC = () => {
 				{
 					id: data.id?.toString(),
 					duration: data.duration || 3000,
-					position: position,
+					position: position
 				}
 			);
 		}
