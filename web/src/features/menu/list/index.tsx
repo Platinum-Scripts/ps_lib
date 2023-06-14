@@ -385,7 +385,6 @@ const ListMenu: React.FC = () => {
 	useNuiEvent('closeMenu', () => closeMenu(true, undefined, true));
 
 	useNuiEvent('setMenu', (data: MenuSettings) => {
-		console.log('setMenu', JSON.stringify(data, null, 2));
 		firstRenderRef.current = true;
 		if (!data.startItemIndex || data.startItemIndex < 0) data.startItemIndex = 0;
 		else if (data.startItemIndex >= data.items.length) data.startItemIndex = data.items.length - 1;
@@ -434,8 +433,6 @@ const ListMenu: React.FC = () => {
 			if (menu.items[data.index].disabled !== data.button.disabled) menu.items[data.index].disabled = data.button.disabled;
 			if (menu.items[data.index].checked !== data.button.checked) menu.items[data.index].checked = data.button.checked;
 			if (menu.items[data.index].values !== data.button.values) menu.items[data.index].values = data.button.values;
-
-			console.log('updateButton', JSON.stringify(menu.items[data.index], null, 2));
 
 			// trigger a re-render
 			setMenu({ ...menu });
