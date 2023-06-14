@@ -9,6 +9,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { titleCase } from "title-case";
 import Textfit from '@namhong2001/react-textfit';
 import { ColorText, halfOpacity } from ".";
+import "./pulse.css";
 
 interface Props {
 	item: MenuItem;
@@ -32,9 +33,11 @@ const useStyles = createStyles(
 			padding: 2,
 			height: 60,
 			scrollMargin: 8,
+			transition: 'box-shadow 0.3s ease-in-out', // Added transition for smooth effect
 			"&:focus": {
 				backgroundColor: theme.colors.lighter[3],
 				outline: "none",
+				boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", // Reduced shadow blur and opacity
 			},
 			maxWidth: 384,
 		},
@@ -101,12 +104,29 @@ const useStyles = createStyles(
 		"50": {
 			// 50% opacity
 			opacity: 0.5,
-		}
+		},
+		colorSwatch: {
+			height: "15px",
+			width: "15px",
+			outline: "none",
+			borderRadius: "3px",
+		},
+		focused: {
+			animation: "pulse 2s infinite",
+			position: 'absolute',
+			height: '100%',
+			width: '4px',
+			right: '5px', // adjust the position from the right to match your rightIcon's position
+			backgroundColor: theme.colors.blue[5],
+			borderRadius: '0 5px 5px 0', // Only apply the border radius to the right side.
+		},
 	})
 );
 
 const ListItem = forwardRef<HTMLDivElement, Props>(
 	({ item, index, scrollIndex, checked }, ref) => {
+		const [isFocused, setIsFocused] = React.useState(false);
+
 		const { classes } = useStyles({
 			iconColor: item.disabled ? "grey" : item.iconColor,
 			rightIconColor: item.rightIconColor,
@@ -119,8 +139,32 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 			return halfOpacity(text);
 		}
 
+		function sliderLabel(text: string) {
+			const regex = /<lib:cswatch:sq:rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)>/;
+			const matches = regex.exec(text);
+			if (matches) {
+				// remove match from text
+				text = text.replace(regex, "").trim();
+				const rgb = {
+					red: parseInt(matches[1]),
+					green: parseInt(matches[2]),
+					blue: parseInt(matches[3])
+				};
+				return (
+					<div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", flexWrap: "nowrap" }}>
+						<span>{text}</span>
+						<div className={`${classes.colorSwatch}`} style={{ backgroundColor: `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue})`, marginLeft: "10px" }} />
+					</div>
+				);
+			} else {
+				return text;
+			}
+		}
+
 		return (
 			<Box
+				onFocus={() => setIsFocused(true)}
+				onBlur={() => setIsFocused(false)}
 				tabIndex={item.disabled ? -1 : index} // make untabbable if disabled
 				className={`${classes.buttonContainer} ${item.disabled ? classes.disabled : ""
 					}`}
@@ -128,82 +172,93 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 				ref={ref}
 				style={{ pointerEvents: item.disabled ? "none" : "auto" }} // make unclickable if disabled
 			>
-				<Group spacing={15} noWrap className={classes.buttonWrapper}>
-					{icon && (
-						<Box className={classes.iconContainer}>
-							{typeof icon === "string" && isIconUrl(icon) ? (
-								<Avatar
-									radius="xl"
-									size={38}
-									imageProps={{
-										style: {
-											backgroundColor: "transparent",
-											objectFit: "contain"
+				<div style={{ position: 'relative', height: '100%' }}>
+					{isFocused && <div className={classes.focused} />}
+					<Group spacing={15} noWrap className={classes.buttonWrapper}>
+						{icon && (
+							<Box className={classes.iconContainer}>
+								{typeof icon === "string" && isIconUrl(icon) ? (
+									<Avatar
+										radius="xl"
+										size={38}
+										imageProps={{
+											style: {
+												backgroundColor: "transparent",
+												objectFit: "contain"
+											}
+										}}
+										src={icon}
+									>
+									</Avatar>
+								) : (
+									<i
+										className={`fa-solid fa-fw findme ${icon} ${classes.icon}`}
+									/>
+								)}
+							</Box>
+						)}
+						{Array.isArray(item.values) ? (
+							<Group position="apart" w="100%">
+								<Stack spacing={0} justify="space-between" className={classes.textContainer}>
+									<Text className={`${classes.label}`} style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+										{/* Title */}
+										{convertTitle(item.label)}
+									</Text>
+									<Textfit min={12} max={16}>
+										{
+											// @ts-ignore
+											sliderLabel(
+												// @ts-ignore
+												typeof item.values[scrollIndex] === "object" && 'label' in item.values[scrollIndex]
+													// @ts-ignore
+													? item.values[scrollIndex].label
+													// @ts-ignore
+													: item.values[scrollIndex]
+											)
 										}
-									}}
-									src = {icon}
-								>
-								</Avatar>
-							) : (
-								<i
-									className={`fa-solid fa-fw findme ${icon} ${classes.icon}`}
-								/>
-							)}
-						</Box>
-					)}
-					{Array.isArray(item.values) ? (
-						<Group position="apart" w="100%">
-							<Stack spacing={0} justify="space-between" className={classes.textContainer}>
-								<Text className={`${classes.label}`} style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-									{convertTitle(item.label)}
-								</Text>
-								<Textfit min ={12} max = {16}>
-									{typeof item.values[scrollIndex] === "object"
-										? // @ts-ignore for some reason even checking the type TS still thinks it's a string
-										item.values[scrollIndex].label
-										: item.values[scrollIndex]}
-								</Textfit>
-							</Stack>
+									</Textfit>
+								</Stack>
 
-							<Group spacing={1} position="center">
-								<i className={`fa-solid fa-chevron-left`}></i>
-								<Text className={classes.scrollIndexValue}>
-									{scrollIndex + 1}/{item.values.length}
-								</Text>
-								<i className={`fa-solid fa-chevron-right`}></i>
+								<Group spacing={1} position="center">
+									<i className={`fa-solid fa-chevron-left`}></i>
+									<Text className={classes.scrollIndexValue}>
+										{scrollIndex + 1}/{item.values.length}
+									</Text>
+									<i className={`fa-solid fa-chevron-right`}></i>
+								</Group>
 							</Group>
-						</Group>
-					) : item.checked !== undefined ? (
-						<Group position="apart" w="100%">
-							<Text className={`${classes.textContainer}`}>{ColorText(item.label)}</Text>
-							<CustomCheckbox checked={checked}></CustomCheckbox>
-						</Group>
-					) : item.progress !== undefined ? (
-						<Stack className={`${classes.progressStack}`} spacing={0}>
-							<Text className={`${classes.progressLabel} ${classes.textContainer}`}>
-								{ColorText(item.label)}
-							</Text>
-							<Progress
-								value={item.progress}
-								color={item.colorScheme || "dark.0"}
-								styles={(theme) => ({
-									root: {
-										backgroundColor: theme.colors.dark[3],
-									},
-								})}
-							/>
-						</Stack>
-					) : item.rightIcon !== undefined ? (
-						<Group position="apart" w="100%">
-							<Text className={classes.textContainer}>{ColorText(item.label)}</Text>
-							<i
-								className={`fa-fw ${item.rightIcon} ${classes.rightIcon}`}
-							></i>
-						</Group>
-					) : (
-						<Text>{convertTitle(item.label)}</Text>
-					)}
-				</Group>
+						) : item.checked !== undefined ? (
+							<Group position="apart" w="100%">
+								<Text className={`${classes.textContainer}`}>{ColorText(item.label)}</Text>
+								<CustomCheckbox checked={checked}></CustomCheckbox>
+							</Group>
+						) : item.progress !== undefined ? (
+							<Stack className={`${classes.progressStack}`} spacing={0}>
+								<Text className={`${classes.progressLabel} ${classes.textContainer}`}>
+									{ColorText(item.label)}
+								</Text>
+								<Progress
+									value={item.progress}
+									color={item.colorScheme || "dark.0"}
+									styles={(theme) => ({
+										root: {
+											backgroundColor: theme.colors.dark[3],
+										},
+									})}
+								/>
+							</Stack>
+						) : item.rightIcon !== undefined ? (
+							<Group position="apart" w="100%">
+								<Text className={classes.textContainer}>{ColorText(item.label)}</Text>
+								<i
+									className={`fa-fw ${item.rightIcon} ${classes.rightIcon}`}
+								></i>
+							</Group>
+						) : (
+							<Text>{convertTitle(item.label)}</Text>
+						)}
+					</Group>
+				</div>
 			</Box>
 		);
 	}

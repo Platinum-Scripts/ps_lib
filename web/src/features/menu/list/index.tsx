@@ -7,7 +7,7 @@ import FocusTrap from 'focus-trap-react';
 import { fetchNui } from '../../../utils/fetchNui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import type { MenuPosition, MenuSettings } from '../../../typings';
+import type { MenuItem, MenuPosition, MenuSettings } from '../../../typings';
 import { ListMenuContext } from '../../../App';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
 import { theme } from '../../../theme';
@@ -380,6 +380,7 @@ const ListMenu: React.FC = () => {
 	useNuiEvent('closeMenu', () => closeMenu(true, undefined, true));
 
 	useNuiEvent('setMenu', (data: MenuSettings) => {
+		console.log('setMenu', JSON.stringify(data, null, 2));
 		firstRenderRef.current = true;
 		if (!data.startItemIndex || data.startItemIndex < 0) data.startItemIndex = 0;
 		else if (data.startItemIndex >= data.items.length) data.startItemIndex = data.items.length - 1;
@@ -401,6 +402,39 @@ const ListMenu: React.FC = () => {
 		setIndexStates(arrayIndexes);
 		setCheckedStates(checkedIndexes);
 		listRefs.current[data.startItemIndex]?.focus();
+	});
+
+	useNuiEvent("setScrollIndex", (data: { index: number, scrollIndex: number }) => {
+		// is the data valid?
+		if (data.index === undefined || data.scrollIndex === undefined) return;
+
+		// does the slider 1.) exist, and 2.) currently active
+		if (menu.items[data.index] && menu.items[data.index].values) {
+			// if so, update the index
+			setIndexStates((prev) => ({ ...prev, [data.index]: data.scrollIndex }));
+		}
+	});
+
+	useNuiEvent("updateButton", (data: { index: number, button: MenuItem }) => {
+		// is the data valid?
+		if (data.index === undefined || data.button === undefined) return;
+
+		// does the button 1.) exist, and 2.) currently active
+		if (menu.items[data.index]) {
+			// if so, update the button
+			// Just make sure each property is the same, if not, update it
+			if (menu.items[data.index].label !== data.button.label) menu.items[data.index].label = data.button.label;
+			if (menu.items[data.index].description !== data.button.description) menu.items[data.index].description = data.button.description;
+			if (menu.items[data.index].icon !== data.button.icon) menu.items[data.index].icon = data.button.icon;
+			if (menu.items[data.index].disabled !== data.button.disabled) menu.items[data.index].disabled = data.button.disabled;
+			if (menu.items[data.index].checked !== data.button.checked) menu.items[data.index].checked = data.button.checked;
+			if (menu.items[data.index].values !== data.button.values) menu.items[data.index].values = data.button.values;
+
+			console.log('updateButton', JSON.stringify(menu.items[data.index], null, 2));
+
+			// trigger a re-render
+			setMenu({ ...menu });
+		}
 	});
 
 	useEffect(() => {

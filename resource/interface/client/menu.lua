@@ -131,6 +131,46 @@ function lib.setSelectedIndex(id, index)
     })
 end
 
+---@param id string
+---@param index number
+---@param scrollIndex number
+function lib.setScrollIndex(id, index, scrollIndex)
+    local menu = registeredMenus[id];
+    if not menu then return end
+
+    -- does menu have button @ index
+    if not menu.options[index] then return end
+
+    SendNUIMessage({
+        action = 'setScrollIndex',
+        data = {
+            index = index and index - 1 or 0,
+            scrollIndex = scrollIndex and scrollIndex - 1 or 0
+        }
+    })
+end
+
+---@param id string
+---@param index number
+---@param data MenuOptions
+function lib.updateButton(id, index, data)
+    local menu = registeredMenus[id];
+    if not menu then return end
+
+    -- does menu have button @ index
+    if not menu.options[index] then return end
+
+    menu.options[index] = data
+
+    SendNUIMessage({
+        action = 'updateButton',
+        data = {
+            index = index and index - 1 or 0,
+            button = data
+        }
+    })
+end
+
 ---@return string?
 function lib.getOpenMenu() return openMenu and openMenu.id end
 
