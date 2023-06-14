@@ -28,14 +28,16 @@ const useStyles = createStyles(
 		}
 	) => ({
 		buttonContainer: {
-			backgroundColor: theme.colors.lighter[1],
+			// backgroundColor: theme.colors.lighter[1],
+			backgroundColor:`rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.5)`,
 			borderRadius: theme.radius.md,
 			padding: 2,
 			height: 60,
 			scrollMargin: 8,
 			transition: 'box-shadow 0.3s ease-in-out', // Added transition for smooth effect
 			"&:focus": {
-				backgroundColor: theme.colors.lighter[3],
+				// backgroundColor: theme.colors.lighter[3],
+				backgroundColor:`rgba(${theme.colors.lighter[3].replace("rgb(", "").replace(")", "")}, 0.85)`,
 				outline: "none",
 				boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", // Reduced shadow blur and opacity
 			},

@@ -21,7 +21,8 @@ const useStyles = createStyles(
 	) => (
 		{
 			tooltip: {
-				backgroundColor: theme.colors.lighter[1],
+				// backgroundColor: theme.colors.lighter[1],
+				backgroundColor:`rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.70)`,
 				color: theme.colors.lighter[0],
 				borderRadius: theme.radius.sm,
 				maxWidth: 350,
@@ -41,7 +42,8 @@ const useStyles = createStyles(
 			},
 			wrapTheWrap: {
 				borderRadius: theme.radius.md,
-				backgroundColor: theme.colors.lighter[2],
+				// backgroundColor: theme.colors.lighter[2],
+				backgroundColor:`rgba(${theme.colors.lighter[2].replace("rgb(", "").replace(")", "")}, 0.85)`,
 				borderTopLeftRadius: theme.radius.md,
 				borderTopRightRadius: theme.radius.md,
 				borderBottomLeftRadius: theme.radius.md,
@@ -53,7 +55,8 @@ const useStyles = createStyles(
 				overflow: 'hidden',
 			},
 			scrollArrow: {
-				backgroundColor: theme.colors.lighter[2],
+				// backgroundColor: theme.colors.lighter[2],
+				backgroundColor:`rgba(${theme.colors.lighter[2].replace("rgb(", "").replace(")", "")}, 0.85)`,
 				textAlign: 'center',
 				height: 25,
 				borderBottomLeftRadius: theme.radius.md,
@@ -67,8 +70,10 @@ const useStyles = createStyles(
 			},
 			bottomBoxes: {
 				width: "auto",
-				backgroundColor: theme.colors.lighter[1],
-				color: theme.colors.lighter[0],
+				// backgroundColor: theme.colors.lighter[1],
+				backgroundColor:`rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.4)`,
+				// color: theme.colors.lighter[0],
+				color:`rgba(${theme.colors.lighter[0].replace("rgb(", "").replace(")", "")}, 0.725)`,
 				borderRadius: theme.radius.sm,
 				fontWeight: 900
 			},
