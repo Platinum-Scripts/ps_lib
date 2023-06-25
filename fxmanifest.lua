@@ -7,7 +7,7 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 
 --[[ Resource Information ]]--
 name         'ps_lib'
-version      '0.0.2'
+version      '0.0.3'
 author       'Original Author: Overextended | Forked by: Platinum-Scripts'
 license      'LGPL-3.0-or-later'
 repository   'https://github.com/Platinum-Scripts/ps_lib'
