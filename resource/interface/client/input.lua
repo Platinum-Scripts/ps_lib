@@ -35,6 +35,7 @@ function lib.inputDialog(heading, rows, options)
 		return
 	end
 	input = promise.new()
+	options = options or {}
 	
 
 	-- Backwards compat with string tables
