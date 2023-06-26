@@ -231,13 +231,13 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 							</Group>
 						) : item.checked !== undefined ? (
 							<Group position="apart" w="100%">
-								<Text className={`${classes.textContainer}`}>{ColorText(item.label)}</Text>
+								<Text className={`${classes.textContainer}`}>{halfOpacity(item.label)}</Text>
 								<CustomCheckbox checked={checked}></CustomCheckbox>
 							</Group>
 						) : item.progress !== undefined ? (
 							<Stack className={`${classes.progressStack}`} spacing={0}>
 								<Text className={`${classes.progressLabel} ${classes.textContainer}`}>
-									{ColorText(item.label)}
+									{halfOpacity(item.label)}
 								</Text>
 								<Progress
 									value={item.progress}
@@ -251,7 +251,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 							</Stack>
 						) : item.rightIcon !== undefined ? (
 							<Group position="apart" w="100%">
-								<Text className={classes.textContainer}>{ColorText(item.label)}</Text>
+								<Text className={classes.textContainer}>{halfOpacity(item.label)}</Text>
 								<i
 									className={`fa-fw ${item.rightIcon} ${classes.rightIcon}`}
 								></i>

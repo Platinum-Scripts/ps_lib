@@ -22,7 +22,7 @@ const useStyles = createStyles(
 		{
 			tooltip: {
 				// backgroundColor: theme.colors.lighter[1],
-				backgroundColor:`rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.70)`,
+				backgroundColor: `rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.70)`,
 				color: theme.colors.lighter[0],
 				borderRadius: theme.radius.sm,
 				maxWidth: 350,
@@ -43,7 +43,7 @@ const useStyles = createStyles(
 			wrapTheWrap: {
 				borderRadius: theme.radius.md,
 				// backgroundColor: theme.colors.lighter[2],
-				backgroundColor:`rgba(${theme.colors.lighter[2].replace("rgb(", "").replace(")", "")}, 0.85)`,
+				backgroundColor: `rgba(${theme.colors.lighter[2].replace("rgb(", "").replace(")", "")}, 0.85)`,
 				borderTopLeftRadius: theme.radius.md,
 				borderTopRightRadius: theme.radius.md,
 				borderBottomLeftRadius: theme.radius.md,
@@ -56,7 +56,7 @@ const useStyles = createStyles(
 			},
 			scrollArrow: {
 				// backgroundColor: theme.colors.lighter[2],
-				backgroundColor:`rgba(${theme.colors.lighter[2].replace("rgb(", "").replace(")", "")}, 0.85)`,
+				backgroundColor: `rgba(${theme.colors.lighter[2].replace("rgb(", "").replace(")", "")}, 0.85)`,
 				textAlign: 'center',
 				height: 25,
 				borderBottomLeftRadius: theme.radius.md,
@@ -71,9 +71,9 @@ const useStyles = createStyles(
 			bottomBoxes: {
 				width: "auto",
 				// backgroundColor: theme.colors.lighter[1],
-				backgroundColor:`rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.4)`,
+				backgroundColor: `rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.4)`,
 				// color: theme.colors.lighter[0],
-				color:`rgba(${theme.colors.lighter[0].replace("rgb(", "").replace(")", "")}, 0.725)`,
+				color: `rgba(${theme.colors.lighter[0].replace("rgb(", "").replace(")", "")}, 0.725)`,
 				borderRadius: theme.radius.sm,
 				fontWeight: 900
 			},
@@ -187,6 +187,24 @@ function halfOpacity(text: string) {
 
 	return parts;
 }
+
+function removeTags(text: string, hard: boolean = false) {
+	// remove <50></50> tags (half opacity)
+	if (hard) {
+		text = text.replace(/<50>(.*?)<\/50>/g, "");
+	} else {
+		text = text.replace(/<50>(.*?)<\/50>/g, "$1");
+	}
+
+	// remove any ColorText tags
+	if (hard) {
+		text = text.replace(/~\w~(.*?)~\w~/g, "");
+	} else {
+		text = text.replace(/~\w~(.*?)~\w~/g, "$1");
+	}
+
+	return text;
+};
 
 const ListMenu: React.FC = () => {
 	const [menu, setMenu] = useState<MenuSettings>({
@@ -474,7 +492,7 @@ const ListMenu: React.FC = () => {
 					classNames={{ tooltip: classes.tooltip }}
 				>
 					<Box className={`${classes.container} ${classes.wrapTheWrap}`}>
-						<Header title={menu.title} />
+						<Header title={removeTags(menu.title, true)} />
 						<Box className={classes.buttonsWrapper}
 							onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)}
 							onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => stopMoveMenu(e)}
@@ -520,4 +538,4 @@ const ListMenu: React.FC = () => {
 };
 
 export default ListMenu;
-export { ListMenu, ColorText, halfOpacity };
+export { ListMenu, ColorText, halfOpacity, removeTags };
