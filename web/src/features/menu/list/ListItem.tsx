@@ -154,12 +154,12 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 				};
 				return (
 					<div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", flexWrap: "nowrap" }}>
-						<span>{text}</span>
+						<span>{halfOpacity(text)}</span>
 						<div className={`${classes.colorSwatch}`} style={{ backgroundColor: `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue})`, marginLeft: "10px" }} />
 					</div>
 				);
 			} else {
-				return text;
+				return halfOpacity(text);
 			}
 		}
 
