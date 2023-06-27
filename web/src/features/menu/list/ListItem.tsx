@@ -29,7 +29,7 @@ const useStyles = createStyles(
 	) => ({
 		buttonContainer: {
 			// backgroundColor: theme.colors.lighter[1],
-			backgroundColor:`rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.5)`,
+			backgroundColor: `rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.5)`,
 			borderRadius: theme.radius.md,
 			padding: 2,
 			height: 60,
@@ -37,7 +37,7 @@ const useStyles = createStyles(
 			transition: 'box-shadow 0.3s ease-in-out', // Added transition for smooth effect
 			"&:focus": {
 				// backgroundColor: theme.colors.lighter[3],
-				backgroundColor:`rgba(${theme.colors.lighter[3].replace("rgb(", "").replace(")", "")}, 0.85)`,
+				backgroundColor: `rgba(${theme.colors.lighter[3].replace("rgb(", "").replace(")", "")}, 0.85)`,
 				outline: "none",
 				boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", // Reduced shadow blur and opacity
 			},
@@ -165,14 +165,15 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
 
 		return (
 			<Box
-				onFocus={() => setIsFocused(true)}
+				onFocus={() => {
+					setIsFocused(true)
+				}}
 				onBlur={() => setIsFocused(false)}
-				tabIndex={item.disabled ? -1 : index} // make untabbable if disabled
-				className={`${classes.buttonContainer} ${item.disabled ? classes.disabled : ""
-					}`}
+				tabIndex={item.disabled ? -1 : index + 2} // make untabbable if disabled
+				className={`${classes.buttonContainer} ${item.disabled ? classes.disabled : ""}`}
 				key={`item-${index}`}
 				ref={ref}
-				style={{ pointerEvents: item.disabled ? "none" : "auto" }} // make unclickable if disabled
+				style={{ pointerEvents: "none" }} // make unclickable if disabled
 			>
 				<div style={{ position: 'relative', height: '100%' }}>
 					{isFocused && <div className={classes.focused} />}

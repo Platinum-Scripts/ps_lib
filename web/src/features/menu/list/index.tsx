@@ -27,6 +27,7 @@ const useStyles = createStyles(
 				borderRadius: theme.radius.sm,
 				maxWidth: 350,
 				whiteSpace: 'normal',
+				pointerEvents: 'none',
 			},
 			container: {
 				position: 'absolute',
@@ -368,7 +369,6 @@ const ListMenu: React.FC = () => {
 			listRefs.current[selected]?.focus({ preventScroll: true });
 		}
 
-
 		fetchNui('changeSelected', [
 			selected,
 			menu.items[selected].values
@@ -472,6 +472,13 @@ const ListMenu: React.FC = () => {
 		}
 	);
 
+	const listenKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Escape', 'Backspace'];
+
+	const stopKey = function (e: React.KeyboardEvent<HTMLDivElement>) {
+		e.preventDefault();
+		e.stopPropagation();
+	};
+
 	return (
 		<>
 			{visible && (
@@ -490,12 +497,42 @@ const ListMenu: React.FC = () => {
 					}
 					transitionDuration={0}
 					classNames={{ tooltip: classes.tooltip }}
+					onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+						if (!listenKeys.includes(e.key)) stopKey(e);
+					}}
+					onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => {
+						if (!listenKeys.includes(e.key)) stopKey(e);
+					}}
+					onKeyDownCapture={(e: React.KeyboardEvent<HTMLDivElement>) => {
+						if (!listenKeys.includes(e.key)) stopKey(e);
+					}}
+					onKeyUpCapture={(e: React.KeyboardEvent<HTMLDivElement>) => {
+						if (!listenKeys.includes(e.key)) stopKey(e);
+					}}
 				>
 					<Box className={`${classes.container} ${classes.wrapTheWrap}`}>
 						<Header title={removeTags(menu.title, true)} />
 						<Box className={classes.buttonsWrapper}
-							onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => moveMenu(e)}
-							onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => stopMoveMenu(e)}
+							onKeyDown={
+								(e: React.KeyboardEvent<HTMLDivElement>) => {
+									if (listenKeys.includes(e.key)) {
+										console.log("keydown", e.key);
+										moveMenu(e);
+									} else {
+										stopKey(e);
+									}
+								}
+							}
+							onKeyUp={
+								(e: React.KeyboardEvent<HTMLDivElement>) => {
+									if (listenKeys.includes(e.key)) {
+										console.log("keyup", e.key);
+										stopMoveMenu(e);
+									} else {
+										stopKey(e);
+									}
+								}
+							}
 						>
 							<FocusTrap active={visible}>
 								<Stack spacing={8} p={8} sx={{ overflowY: 'scroll' }}>
