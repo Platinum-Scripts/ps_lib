@@ -12,6 +12,7 @@ import { ListMenuContext } from '../../../App';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
 import { theme } from '../../../theme';
 import { autoCrop } from "../../notifications/NotificationWrapper";
+import StatsTable from './StatsTable';
 
 let white: string;
 
@@ -479,97 +480,122 @@ const ListMenu: React.FC = () => {
 		e.stopPropagation();
 	};
 
+	const stats = [
+		// Weapon Stats
+		{ label: 'Damage', value: 50 },
+		{ label: 'Fire Rate', value: 75 },
+		{ label: 'Accuracy', value: 25 },
+		{ label: 'Range', value: 100 },
+	];
+
+	const hasFooter = function () {
+		if (visible) {
+			if (
+				(
+					isValuesObject(menu.items[selected].values)
+						? // @ts-ignore
+						halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`)
+						: halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`)
+				) != undefined
+			) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	return (
 		<>
-			{visible && (
-				<Tooltip
-					label={
-						isValuesObject(menu.items[selected].values)
+			<div>
+				{visible && (
+					<><Tooltip
+						label={isValuesObject(menu.items[selected].values)
 							? // @ts-ignore
 							halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`)
-							: halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`)
-					}
-					opened={
-						isValuesObject(menu.items[selected].values)
+							: halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`)}
+						opened={isValuesObject(menu.items[selected].values)
 							? // @ts-ignore
 							!!menu.items[selected].values[indexStates[selected]].description
-							: !!menu.items[selected].description
-					}
-					transitionDuration={0}
-					classNames={{ tooltip: classes.tooltip }}
-					onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-						if (!listenKeys.includes(e.key)) stopKey(e);
-					}}
-					onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => {
-						if (!listenKeys.includes(e.key)) stopKey(e);
-					}}
-					onKeyDownCapture={(e: React.KeyboardEvent<HTMLDivElement>) => {
-						if (!listenKeys.includes(e.key)) stopKey(e);
-					}}
-					onKeyUpCapture={(e: React.KeyboardEvent<HTMLDivElement>) => {
-						if (!listenKeys.includes(e.key)) stopKey(e);
-					}}
-				>
-					<Box className={`${classes.container} ${classes.wrapTheWrap}`}>
-						<Header title={removeTags(menu.title, true)} />
-						<Box className={classes.buttonsWrapper}
-							onKeyDown={
-								(e: React.KeyboardEvent<HTMLDivElement>) => {
-									if (listenKeys.includes(e.key)) {
-										console.log("keydown", e.key);
-										moveMenu(e);
-									} else {
-										stopKey(e);
-									}
-								}
-							}
-							onKeyUp={
-								(e: React.KeyboardEvent<HTMLDivElement>) => {
-									if (listenKeys.includes(e.key)) {
-										console.log("keyup", e.key);
-										stopMoveMenu(e);
-									} else {
-										stopKey(e);
-									}
-								}
-							}
-						>
-							<FocusTrap active={visible}>
-								<Stack spacing={8} p={8} sx={{ overflowY: 'scroll' }}>
-									{menu.items.map((item, index) => (
-										<React.Fragment key={`menu-item-${index}`}>
-											{item.label && (
-												<ListItem
-													index={index}
-													item={item}
-													scrollIndex={indexStates[index]}
-													checked={checkedStates[index]}
-													ref={(el) => (listRefs.current[index] = el)}
-												/>
-											)}
-										</React.Fragment>
-									))}
-								</Stack>
-							</FocusTrap>
-						</Box>
+							: !!menu.items[selected].description}
+						transitionDuration={0}
+						classNames={{ tooltip: classes.tooltip }}
+						onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+							if (!listenKeys.includes(e.key)) stopKey(e);
+						}}
+						onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => {
+							if (!listenKeys.includes(e.key)) stopKey(e);
+						}}
+						onKeyDownCapture={(e: React.KeyboardEvent<HTMLDivElement>) => {
+							if (!listenKeys.includes(e.key)) stopKey(e);
+						}}
+						onKeyUpCapture={(e: React.KeyboardEvent<HTMLDivElement>) => {
+							if (!listenKeys.includes(e.key)) stopKey(e);
+						}}
+					>
+						<Box className={`${classes.container}`}>
+							<div className={`${classes.wrapTheWrap}`}>
+								<Header title={removeTags(menu.title, true)} />
+								<Box className={classes.buttonsWrapper}
+									onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+										if (listenKeys.includes(e.key)) {
+											console.log("keydown", e.key);
+											moveMenu(e);
+										} else {
+											stopKey(e);
+										}
+									}}
+									onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => {
+										if (listenKeys.includes(e.key)) {
+											console.log("keyup", e.key);
+											stopMoveMenu(e);
+										} else {
+											stopKey(e);
+										}
+									}}
+								>
+									<FocusTrap active={visible}>
+										<Stack spacing={8} p={8} sx={{ overflowY: 'scroll' }}>
+											{menu.items.map((item, index) => (
+												<React.Fragment key={`menu-item-${index}`}>
+													{item.label && (
+														<ListItem
+															index={index}
+															item={item}
+															scrollIndex={indexStates[index]}
+															checked={checkedStates[index]}
+															ref={(el) => (listRefs.current[index] = el)} />
+													)}
+												</React.Fragment>
+											))}
+										</Stack>
+									</FocusTrap>
+								</Box>
 
-						<Box className={classes.scrollArrow} style={{ display: 'flex', alignItems: 'center' }}>
-							<div style={{ flex: 1 }}></div>
-							<Text style={{ textAlign: 'center', flex: 1, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-								{menu.items.length > 6 && selected !== menu.items.length - 1 && (
-									<i className={`fa-solid fa-chevron-down`}></i>
-								)}
-							</Text>
-							<Box style={{ flex: 1, paddingRight: '1em', textAlign: 'right' }}>
-								<span className={`${classes.bottomBoxes}`} style={{ padding: "0.2em" }}>
-									<i className={`fa-solid fa-sort`} style={{ paddingRight: "0.15em" }}></i>
-									{selected + 1}/{menu.items.length}
-								</span>
-							</Box>
+								<Box className={classes.scrollArrow} style={{ display: 'flex', alignItems: 'center' }}>
+									<div style={{ flex: 1 }}></div>
+									<Text style={{ textAlign: 'center', flex: 1, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+										{menu.items.length > 6 && selected !== menu.items.length - 1 && (
+											<i className={`fa-solid fa-chevron-down`}></i>
+										)}
+									</Text>
+									<Box style={{ flex: 1, paddingRight: '1em', textAlign: 'right' }}>
+										<span className={`${classes.bottomBoxes}`} style={{ padding: "0.2em" }}>
+											<i className={`fa-solid fa-sort`} style={{ paddingRight: "0.15em" }}></i>
+											{selected + 1}/{menu.items.length}
+										</span>
+									</Box>
+								</Box>
+							</div>
+
+							{/* <div>
+        <StatsTable stats={stats} params={{ position: menu.position, itemCount: menu.items.length, selected, hasFooter: hasFooter() }} />
+    </div> */}
 						</Box>
-					</Box>
-				</Tooltip>
-			)}
+					</Tooltip><div>
+							<StatsTable stats={stats} params={{ position: menu.position, itemCount: menu.items.length, selected, hasFooter: hasFooter() }} />
+						</div></>
+				)}
+			</div>
 		</>
 	);
 };
