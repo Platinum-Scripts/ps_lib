@@ -453,6 +453,7 @@ const ListMenu: React.FC = () => {
 			if (menu.items[data.index].disabled !== data.button.disabled) menu.items[data.index].disabled = data.button.disabled;
 			if (menu.items[data.index].checked !== data.button.checked) menu.items[data.index].checked = data.button.checked;
 			if (menu.items[data.index].values !== data.button.values) menu.items[data.index].values = data.button.values;
+			if (menu.items[data.index].stats !== data.button.stats) menu.items[data.index].stats = data.button.stats;
 
 			// trigger a re-render
 			setMenu({ ...menu });
