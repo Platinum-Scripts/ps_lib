@@ -6,7 +6,13 @@ export type MenuPosition =
 	| "bottom-left"
 	| "bottom-right";
 
+type Stat = {
+	label: string;
+	value: number;
+};
+
 export interface MenuItem {
+	stats: Stat[];
 	image?: string;
 	label: string;
 	progress?: number;

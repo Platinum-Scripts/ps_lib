@@ -9,19 +9,14 @@ type Stat = {
 
 type StatsTableProps = {
     stats: Stat[];
-    params: { position?: MenuPosition; itemCount: number; selected: number, hasFooter: boolean },
+    params: { position?: MenuPosition; itemCount: number; selected: number }
 };
 
-const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCount: number; selected: number, hasFooter: boolean }) => ({
+const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCount: number; selected: number }) => ({
     radius: {
         borderRadius: theme.radius.sm,
     },
     main: {
-
-        // if hasFooter, then position NEEDS to be under .mantine-Tooltip-tooltip, otherwise inherit
-        // position: params.hasFooter ? 'absolute' : 'inherit',
-
-
         marginTop: params.position === 'top-left' || params.position === 'top-right' ? 8 : 2,
         marginLeft: params.position === 'top-left' || params.position === 'bottom-left' ? 8 : 2,
         marginRight: params.position === 'top-right' || params.position === 'bottom-right' ? 8 : 2,
@@ -30,7 +25,7 @@ const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCo
         left: params.position === 'bottom-left' ? 1 : undefined,
         bottom: params.position === 'bottom-left' || params.position === 'bottom-right' ? 1 : undefined,
 
-        backgroundColor: `rgba(${theme.colors.lighter[1].replace("rgb(", "").replace(")", "")}, 0.70)`,
+        backgroundColor: `rgba(${theme.colors.darker[0].replace("rgb(", "").replace(")", "")}, 0.70)`,
         color: theme.colors.lighter[0],
         borderRadius: theme.radius.md,
         borderTopLeftRadius: theme.radius.md,
@@ -40,48 +35,40 @@ const useStyles = createStyles((theme, params: { position?: MenuPosition; itemCo
         maxWidth: 350,
         whiteSpace: 'normal',
         pointerEvents: 'none',
-        border: "none"
-    }
+        border: "none",
+        transform: "translateX(50px)",
+        width: 'auto',
+        fontSize: theme.fontSizes.xs,
+    },
+
+    smallerText: {
+        fontSize: theme.fontSizes.sm,
+        scale: 0.75
+    },
+
+    smallerColumn: {
+        width: '25%',
+    },
 }));
 
 const StatsTable: React.FC<StatsTableProps> = ({ stats, params }) => {
-
-    // get position of .mantine-Tooltip-tooltip
-
-
-    // if params.hasFooter, then position NEEDS to be under .mantine-Tooltip-tooltip, otherwise inherit
-    if (params.hasFooter) {
-        const tooltip = document.getElementsByClassName('mantine-Tooltip-tooltip');
-        if (tooltip && typeof tooltip === "object") {
-            if (tooltip.length > 0 && typeof tooltip[0] === "object") {
-                const tip = tooltip[0] as HTMLElement;
-                if (tip) {
-                    let pos = tip.getBoundingClientRect();
-                    console.log("pos", pos)
-                }
-            }
-        }
-    } else {
-        console.log("noFooter", params)
-    }
-
     const { classes } = useStyles(params);
 
     return (
-        <Table style={{ backgroundColor: 'rgba(0, 0, 0, 200)' }} className={classes.main}>
-            <tbody style={{ border: "none" }}>
+        <Table className={classes.main} cellSpacing={0} cellPadding={0} style={{ border: 'none' }}>
+            <tbody style={{ border: 'none' }}>
                 {stats.map((stat, index) => (
-                    <tr key={index} style={{ border: "none" }}>
-                        <td style={{ border: "none", width: '30%' }}>
-                            <Text>{stat.label}</Text>
+                    <tr key={index} style={{ border: 'none' }}>
+                        <td style={{ border: 'none', width: '30%' }}>
+                            <Text className={classes.smallerText}>{stat.label}</Text>
                         </td>
-                        <td style={{ border: "none", width: '70%' }}>
+                        <td style={{ border: 'none', width: '70%' }}>
                             <Progress
                                 radius={0}
                                 value={stat.value}
-                                color="red"
+                                color="rgb(255, 0, 0, 1.0)"
                                 style={{
-                                    backgroundColor: 'rgba(255, 0, 0, 255)',
+                                    backgroundColor: 'rgb(68, 68, 68, 1.0)',
                                     width: '100%',
                                 }}
                             />

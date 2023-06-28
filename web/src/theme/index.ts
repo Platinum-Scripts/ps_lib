@@ -11,6 +11,9 @@ export const theme: MantineThemeOverride = {
 			"rgb(35, 60, 85)", // Secondary Background Color (Header, Description, Button:!hover) - Slightly Lighter Dark Blue
 			"rgb(25, 70, 95)", // Button Hover Color - Even Lighter Dark Blue
 		],
+		darker: [
+			"rgb(10, 15, 20)", // Main Text Color - Darkened Blue
+		]
 	},
 	shadows: {
 		sm: "1px 1px 3px rgba(0, 0, 0, 0.3)",
