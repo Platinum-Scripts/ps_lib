@@ -501,23 +501,11 @@ const ListMenu: React.FC = () => {
 									<StatsTable stats={menu.items[selected].stats} params={{ position: menu.position, itemCount: menu.items.length, selected }} />
 								</div>
 							);
-						} else {
-							console.log("\tShouldWeAddStats() - Selected item does not have stats");
 						}
-					} else {
-						console.log("\tShouldWeAddStats() - Selected item is not an object");
 					}
-				} else {
-					console.log("\tShouldWeAddStats() - Selected is not a number", selected, typeof selected);
 				}
-
-			} else {
-				console.log("\tShouldWeAddStats() - Menu is not an object");
 			}
-		} else {
-			console.log("\tShouldWeAddStats() - Not visible");
 		}
-
 		return <div style={{ display: "none" }}></div>
 	};
 
