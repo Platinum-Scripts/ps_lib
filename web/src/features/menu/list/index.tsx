@@ -7,7 +7,7 @@ import FocusTrap from 'focus-trap-react';
 import { fetchNui } from '../../../utils/fetchNui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import type { MenuItem, MenuPosition, MenuSettings } from '../../../typings';
+import type { MenuItem, MenuPosition, MenuSettings, Stat } from '../../../typings';
 import { ListMenuContext } from '../../../App';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
 import { theme } from '../../../theme';
@@ -499,7 +499,7 @@ const ListMenu: React.FC = () => {
 						if (menu.items[selected].stats && typeof menu.items[selected].stats === "object") {
 							return (
 								<div>
-									<StatsTable stats={menu.items[selected].stats} params={{ position: menu.position, itemCount: menu.items.length, selected }} />
+									<StatsTable stats={menu.items[selected].stats as Stat[]} params={{ position: menu.position, itemCount: menu.items.length, selected }} />
 								</div>
 							);
 						}

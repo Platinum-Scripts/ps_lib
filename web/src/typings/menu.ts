@@ -6,13 +6,13 @@ export type MenuPosition =
 	| "bottom-left"
 	| "bottom-right";
 
-type Stat = {
+export type Stat = {
 	label: string;
 	value: number;
 };
 
 export interface MenuItem {
-	stats: Stat[];
+	stats?: Stat[];
 	image?: string;
 	label: string;
 	progress?: number;
