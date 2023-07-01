@@ -517,8 +517,8 @@ const ListMenu: React.FC = () => {
 					label={
 						isValuesObject(menu.items[selected].values)
 							? // @ts-ignore
-							halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`)
-							: halfOpacity(`${menu.items[selected].disabled ? '[DISABLED] ' : ''}${menu.items[selected].description}`)
+							halfOpacity(`${menu.items[selected].disabled ? '[~r~DISABLED~w~] ' : ''}${menu.items[selected].values[indexStates[selected]].description}`)
+							: halfOpacity(`${menu.items[selected].disabled ? '[~r~DISABLED~w~] ' : ''}${menu.items[selected].description}`)
 					}
 					opened={
 						isValuesObject(menu.items[selected].values)
