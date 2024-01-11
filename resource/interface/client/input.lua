@@ -1,4 +1,3 @@
-
 local input
 
 ---@class InputDialogRowProps
@@ -23,23 +22,23 @@ local input
 
 ---@class InputDialogOptionsProps
 ---@field allowCancel? boolean
+---@field onRowUpdate? function(data: any): void
 
 ---@param heading string
 ---@param rows string[] | InputDialogRowProps[]
 ---@param options InputDialogOptionsProps[]?
 ---@return string[] | number[] | boolean[] | nil
 local resName = GetCurrentResourceName()
-local lastId = 0;
+local lastId = 0
 function lib.inputDialog(heading, rows, options)
 	if input then
 		return
 	end
 	input = promise.new()
 	options = options or {}
-	
 
 	-- Backwards compat with string tables
-	for i = 1, # rows do
+	for i = 1, #rows do
 		if type(rows[i]) == "string" then
 			rows[i] = {
 				type = "input",
@@ -48,35 +47,39 @@ function lib.inputDialog(heading, rows, options)
 		end
 	end
 
-	local rawOptions = {[1] = options.onRowUpdate};
+	local rawOptions = {[1] = options.onRowUpdate}
 
 	if options and options.onRowUpdate then
-		options.onRowUpdate = true;
-		options.cbe = "onRowUpdate:"..resName..":"..lastId;
+		options.onRowUpdate = true
+		options.cbe = "onRowUpdate:" .. resName .. ":" .. lastId
 	end
 
-	RegisterNUICallback("onRowUpdate:"..resName..":"..lastId, function(data, cb)
-		if cb then
-			pcall(cb, 1)
-		end
+	RegisterNUICallback(
+		"onRowUpdate:" .. resName .. ":" .. lastId,
+		function(data, cb)
+			if cb then
+				pcall(cb, 1)
+			end
 
-		if rawOptions and rawOptions[1] then
-			rawOptions[1](data)
+			if rawOptions and rawOptions[1] then
+				rawOptions[1](data)
+			end
 		end
-	end)
+	)
 
 	lib.setNuiFocus(false)
 	SendNUIMessage(
 		{
-		action = "openDialog",
-		data = {
-			heading = heading,
-			rows = rows,
-			options = options
+			action = "openDialog",
+			data = {
+				heading = heading,
+				rows = rows,
+				options = options
+			}
 		}
-	})
+	)
 
-	lastId = lastId + 1;
+	lastId = lastId + 1
 
 	return Citizen.Await(input)
 end
@@ -89,17 +92,21 @@ function lib.closeInputDialog()
 	lib.resetNuiFocus()
 	SendNUIMessage(
 		{
-		action = "closeInputDialog"
-	})
+			action = "closeInputDialog"
+		}
+	)
 
 	input:resolve(nil)
 	input = nil
 end
 
-RegisterNUICallback("inputData", function(data, cb)
-	cb(1)
-	lib.resetNuiFocus()
-	local promise = input
-	input = nil
-	promise:resolve(data)
-end)
+RegisterNUICallback(
+	"inputData",
+	function(data, cb)
+		cb(1)
+		lib.resetNuiFocus()
+		local promise = input
+		input = nil
+		promise:resolve(data)
+	end
+)
